@@ -20,17 +20,22 @@ public class MetadataEntityTypeController {
 		return "Hello World";
 	}
 
-	public List<EntityType> getEntities() {
-		List<EntityType> entities = new ArrayList<EntityType>();
+	public List<EntityTypeRest> getEntities() {
+		List<EntityTypeRest> entities = new ArrayList<EntityTypeRest>();
 		List<Class<?>> domains = DomainModelContainer.getDomains();
 		
 		for(Class<?> domain : domains) {
-			EntityType entityType = new EntityType();
+			EntityTypeRest entityType = new EntityTypeRest();
 			entityType.setName(domain.getSimpleName());
 			entities.add(entityType);
 		}
 		
 		return entities;
+	}
+
+	public EntityTypeRest getEntity(long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

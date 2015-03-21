@@ -7,8 +7,9 @@ public class DomainModelContainer {
 
 	private static List<Class<?>> entities = new ArrayList<Class<?>>();
 	
-	public static void deploy(Class<?> entityType) {
+	public static long deploy(Class<?> entityType) {
 		entities.add(entityType);
+		return 0;
 	}
 	
 	public static List<Class<?>> getDomains() {
