@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan
-public class Main {	
+@ComponentScan(basePackages={"com.nanuvem.metagui.server.controller"})
+public class MetaGuiEntryPoint {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Main.class, args);
+	public static void run(String[] args) {
+		SpringApplication.run(MetaGuiEntryPoint.class, args);
 	}
 }
