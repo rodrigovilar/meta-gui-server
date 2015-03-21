@@ -12,5 +12,13 @@ public class EntityType {
 		this.name = name;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof EntityType) {
+			EntityType other = (EntityType)obj;
+			return this.getName().equals(other.getName());
+		}
+		return false;
+	}
 	
 }

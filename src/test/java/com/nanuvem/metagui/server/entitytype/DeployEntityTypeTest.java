@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.nanuvem.metagui.server.MetaGuiEntryPoint;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.controller.EntityType;
-import com.nanuvem.metagui.server.controller.HelloController;
+import com.nanuvem.metagui.server.controller.MetadataEntityTypeController;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetaGuiEntryPoint.class)
@@ -24,7 +24,7 @@ import com.nanuvem.metagui.server.controller.HelloController;
 public class DeployEntityTypeTest {
 
 	@Autowired
-	HelloController controller;
+	MetadataEntityTypeController controller;
 
 
 
