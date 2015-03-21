@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +49,7 @@ public class DeployEntityTypeTest {
 	public void testOneEntityTypeWithPropertiesGetEntities() {
 		DomainModelContainer.deploy(CustomerDetails.class);
 		
-		EntityTypeRest expected = TestHelper.createEntityTypeRest("Customer");
+		EntityTypeRest expected = TestHelper.createEntityTypeRest("CustomerDetails");
 		List<EntityTypeRest> entities = controller.getEntities();
 		
 		assertEquals(1, entities.size());
@@ -60,7 +61,7 @@ public class DeployEntityTypeTest {
 	public void testOneEntityTypeGetEntity() {
 		long id = DomainModelContainer.deploy(CustomerDetails.class);
 		
-		EntityTypeRest expected = TestHelper.createEntityTypeRest("Customer");
+		EntityTypeRest expected = TestHelper.createEntityTypeRest("CustomerDetails");
 		TestHelper.addPropertyTypeRest(expected, "name", PropertyTypeType.string);
 		TestHelper.addPropertyTypeRest(expected, "ssn", PropertyTypeType.string);
 		TestHelper.addPropertyTypeRest(expected, "birthdate", PropertyTypeType.date);
@@ -71,5 +72,9 @@ public class DeployEntityTypeTest {
 		assertEquals(expected, entity);
 	}
 
+	@After
+	public void tearDown() {
+		DomainModelContainer.clear();
+	}
 
 }

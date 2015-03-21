@@ -1,5 +1,7 @@
 package com.nanuvem.metagui.server.controller;
 
+import java.lang.reflect.Field;
+
 public class PropertyTypeRest {
 
 	private String name;
@@ -51,6 +53,33 @@ public class PropertyTypeRest {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	public static PropertyTypeRest propertyTypeRestFromField(Field field) {
+		PropertyTypeRest propertyTypeRest = new PropertyTypeRest();
+		propertyTypeRest.setName(field.getName());
+		String fieldName = field.getType().getSimpleName();
+		propertyTypeRest.setType(propertyTypeTypeFromString(fieldName));
+		return propertyTypeRest;
+	}
+
+	public static PropertyTypeType propertyTypeTypeFromString(String typeName) {
+		if(typeName.equals("String")){
+			return PropertyTypeType.string;
+		}
+		if(typeName.equals("boolean")){
+			return PropertyTypeType.bool;
+		}
+		if(typeName.equals("Date")){
+			return PropertyTypeType.date;
+		}
+		if(typeName.equals("double")){
+			return PropertyTypeType.real;
+		}
+		if(typeName.equals("int")){
+			return PropertyTypeType.integer;
+		}
+		return null;
 	}
 	
 	
