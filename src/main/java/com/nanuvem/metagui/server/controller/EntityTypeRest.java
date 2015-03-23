@@ -1,5 +1,6 @@
 package com.nanuvem.metagui.server.controller;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,5 +69,19 @@ public class EntityTypeRest {
 		return true;
 	}
 
-
+	public static EntityTypeRest entityTypeRestFromClass(Class<?> domain) {
+		if(domain == null)
+			return null;
+		
+		EntityTypeRest entityTypeRest = new EntityTypeRest();
+		entityTypeRest.setName(domain.getSimpleName());
+		
+		for(Field field : domain.getDeclaredFields()) {
+			PropertyTypeRest propertyTypeRest = PropertyTypeRest.propertyTypeRestFromField(field);
+			entityTypeRest.getProperties().add(propertyTypeRest);
+		}
+		
+		return entityTypeRest;
+	}
+	
 }

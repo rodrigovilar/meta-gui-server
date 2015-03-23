@@ -25,17 +25,14 @@ public class MetadataEntityTypeController {
 		List<Class<?>> domains = DomainModelContainer.getDomains();
 		
 		for(Class<?> domain : domains) {
-			EntityTypeRest entityType = new EntityTypeRest();
-			entityType.setName(domain.getSimpleName());
-			entities.add(entityType);
+			entities.add(EntityTypeRest.entityTypeRestFromClass(domain));
 		}
 		
 		return entities;
 	}
 
 	public EntityTypeRest getEntity(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return EntityTypeRest.entityTypeRestFromClass(DomainModelContainer.getDomain(id));
 	}
 
 }
