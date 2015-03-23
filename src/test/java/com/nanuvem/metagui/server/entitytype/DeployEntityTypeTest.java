@@ -17,6 +17,7 @@ import com.nanuvem.metagui.server.MetaGuiEntryPoint;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.controller.EntityTypeRest;
 import com.nanuvem.metagui.server.controller.MetadataEntityTypeController;
+import com.nanuvem.metagui.server.controller.OperationalController;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
 
 
@@ -29,6 +30,8 @@ public class DeployEntityTypeTest {
 	@Autowired
 	MetadataEntityTypeController controller;
 
+	@Autowired
+	OperationalController operationalController;
 
 
 	@DirtiesContext
@@ -41,6 +44,8 @@ public class DeployEntityTypeTest {
 		
 		assertEquals(1, entities.size());
 		assertEquals(expected, entities.get(0));
+		
+		assertEquals("[]", operationalController.getAll());
 	}
 	
 	@DirtiesContext
@@ -53,6 +58,8 @@ public class DeployEntityTypeTest {
 		
 		assertEquals(1, entities.size());
 		assertEquals(expected, entities.get(0));
+
+		assertEquals("[]", operationalController.getAll());
 	}
 
 	@DirtiesContext
@@ -69,7 +76,17 @@ public class DeployEntityTypeTest {
 		EntityTypeRest entity = controller.getEntity(id);
 		
 		assertEquals(expected, entity);
+		
+		assertEquals("[]", operationalController.getAll());
 	}
 
+	@DirtiesContext
+	@Test
+	public void testOperationalCRUD() {
+		DomainModelContainer.deploy(CustomerDetails.class);
+		
+		operationalController.create("{\"name\":\"John\", \"ssn\":\"123\"}");
+		assertEquals("{\"name\":\"John\", \"ssn\":\"123\"}", operationalController.getAll());
+	}
 
 }
