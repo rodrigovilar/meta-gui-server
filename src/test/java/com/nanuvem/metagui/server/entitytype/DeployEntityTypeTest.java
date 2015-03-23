@@ -38,7 +38,7 @@ public class DeployEntityTypeTest {
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeGetEntities() {
-		DomainModelContainer.deploy(Customer.class);
+		Long id = DomainModelContainer.deploy(Customer.class);
 		
 		EntityTypeRest expected = TestHelper.createEntityTypeRest("Customer");
 		List<EntityTypeRest> entities = controller.getEntities();
@@ -46,13 +46,13 @@ public class DeployEntityTypeTest {
 		assertEquals(1, entities.size());
 		assertEquals(expected, entities.get(0));
 		
-		assertEquals("[]", operationalController.getAll());
+		assertEquals("[]", operationalController.getAll(id));
 	}
 	
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeWithPropertiesGetEntities() {
-		DomainModelContainer.deploy(CustomerDetails.class);
+		Long id = DomainModelContainer.deploy(CustomerDetails.class);
 		
 		EntityTypeRest expected = TestHelper.createEntityTypeRest("CustomerDetails");
 		List<EntityTypeRest> entities = controller.getEntities();
@@ -60,13 +60,13 @@ public class DeployEntityTypeTest {
 		assertEquals(1, entities.size());
 		assertEquals(expected, entities.get(0));
 
-		assertEquals("[]", operationalController.getAll());
+		assertEquals("[]", operationalController.getAll(id));
 	}
 
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeGetEntity() {
-		long id = DomainModelContainer.deploy(CustomerDetails.class);
+		Long id = DomainModelContainer.deploy(CustomerDetails.class);
 		
 		EntityTypeRest expected = TestHelper.createEntityTypeRest("CustomerDetails");
 		TestHelper.addPropertyTypeRest(expected, "name", PropertyTypeType.string);
@@ -78,16 +78,17 @@ public class DeployEntityTypeTest {
 		
 		assertEquals(expected, entity);
 		
-		assertEquals("[]", operationalController.getAll());
+		assertEquals("[]", operationalController.getAll(id));
 	}
 
 	@DirtiesContext
 	@Test
 	public void testOperationalCRUD() {
-		DomainModelContainer.deploy(CustomerDetails.class);
+		Long id = DomainModelContainer.deploy(CustomerDetails.class);
 		
-		operationalController.create("{\"name\":\"John\", \"ssn\":\"123\"}");
-		assertEquals("{\"name\":\"John\", \"ssn\":\"123\"}", operationalController.getAll());
+		operationalController.create(id, "{\"name\":\"John\", \"ssn\":\"123\"}");
+		assertEquals("[{\"name\":\"John\",\"ssn\":\"123\",\"credit\":0.0}]", operationalController.getAll(id));
+	}
 
 	@After
 	public void tearDown() {

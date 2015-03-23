@@ -69,19 +69,23 @@ public class EntityTypeRest {
 		return true;
 	}
 
-	public static EntityTypeRest entityTypeRestFromClass(Class<?> domain) {
-		if(domain == null)
+	public static EntityTypeRest entityTypeRestFromClass(Class<?> domain,
+			boolean withProperties) {
+		if (domain == null)
 			return null;
-		
+
 		EntityTypeRest entityTypeRest = new EntityTypeRest();
 		entityTypeRest.setName(domain.getSimpleName());
-		
-		for(Field field : domain.getDeclaredFields()) {
-			PropertyTypeRest propertyTypeRest = PropertyTypeRest.propertyTypeRestFromField(field);
-			entityTypeRest.getProperties().add(propertyTypeRest);
+
+		if (withProperties) {
+			for (Field field : domain.getDeclaredFields()) {
+				PropertyTypeRest propertyTypeRest = PropertyTypeRest
+						.propertyTypeRestFromField(field);
+				entityTypeRest.getProperties().add(propertyTypeRest);
+			}
 		}
-		
+
 		return entityTypeRest;
 	}
-	
+
 }
