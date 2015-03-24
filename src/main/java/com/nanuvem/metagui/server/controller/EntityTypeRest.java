@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nanuvem.metagui.server.container.EntityType;
+
 public class EntityTypeRest {
 
 	private long id;
@@ -69,16 +71,17 @@ public class EntityTypeRest {
 		return true;
 	}
 
-	public static EntityTypeRest entityTypeRestFromClass(Class<?> domain,
+	public static EntityTypeRest toRest(EntityType domain,
 			boolean withProperties) {
 		if (domain == null)
 			return null;
 
 		EntityTypeRest entityTypeRest = new EntityTypeRest();
-		entityTypeRest.setName(domain.getSimpleName());
+		entityTypeRest.setName(domain.getName());
+		entityTypeRest.setId(domain.getId());
 
 		if (withProperties) {
-			for (Field field : domain.getDeclaredFields()) {
+			for (Field field : domain.getClazz().getDeclaredFields()) {
 				PropertyTypeRest propertyTypeRest = PropertyTypeRest
 						.propertyTypeRestFromField(field);
 				entityTypeRest.getProperties().add(propertyTypeRest);

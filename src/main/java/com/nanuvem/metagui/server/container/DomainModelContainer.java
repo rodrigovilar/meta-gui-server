@@ -8,20 +8,20 @@ import java.util.Map;
 public class DomainModelContainer {
 
 	private static Long counter = 0l;
-	private static Map<Long, Class<?>> entities = new HashMap<Long, Class<?>>();
+	private static Map<Long, EntityType> entities = new HashMap<Long, EntityType>();
 	private static Map<Long, List<Object>> instances = new HashMap<Long, List<Object>>();
 	
 	public static long deploy(Class<?> entityType) {
-		entities.put(++counter, entityType);
+		entities.put(++counter, EntityType.entityTypeFromClass(entityType, counter));
 		instances.put(counter, new ArrayList<Object>());
 		return counter;
 	}
 	
-	public static List<Class<?>> getDomains() {
-		return new ArrayList<Class<?>>(entities.values());
+	public static List<EntityType> getDomains() {
+		return new ArrayList<EntityType>(entities.values());
 	}
 	
-	public static Class<?> getDomain(Long id) {
+	public static EntityType getDomain(Long id) {
 		return entities.get(id);
 	}
 	

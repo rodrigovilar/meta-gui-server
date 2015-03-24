@@ -5,34 +5,34 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.nanuvem.metagui.server.container.DomainModelContainer;
+import com.nanuvem.metagui.server.container.EntityType;
 
 @Controller
 @EnableAutoConfiguration
 public class MetadataEntityTypeController {
 
-	@RequestMapping("/")
+	@RequestMapping("/entities")
 	@ResponseBody
-	String home() {
-		return "Hello World";
-	}
-
 	public List<EntityTypeRest> getEntities() {
 		List<EntityTypeRest> entities = new ArrayList<EntityTypeRest>();
-		List<Class<?>> domains = DomainModelContainer.getDomains();
+		List<EntityType> domains = DomainModelContainer.getDomains();
 		
-		for(Class<?> domain : domains) {
-			entities.add(EntityTypeRest.entityTypeRestFromClass(domain, false));
+		for(EntityType domain : domains) {
+			entities.add(EntityTypeRest.toRest(domain, false));
 		}
 		
 		return entities;
 	}
 
-	public EntityTypeRest getEntity(long id) {
-		return EntityTypeRest.entityTypeRestFromClass(DomainModelContainer.getDomain(id), true);
+	@RequestMapping("/entities/{entityId}")
+	@ResponseBody
+	public EntityTypeRest getEntity(@PathVariable Long entityId) {
+		return EntityTypeRest.toRest(DomainModelContainer.getDomain(entityId), true);
 	}
 
 }

@@ -40,7 +40,7 @@ public class DeployEntityTypeTest {
 	public void testOneEntityTypeGetEntities() {
 		Long id = DomainModelContainer.deploy(Customer.class);
 		
-		EntityTypeRest expected = TestHelper.createEntityTypeRest("Customer");
+		EntityTypeRest expected = TestHelper.createEntityTypeRest(id, "Customer");
 		List<EntityTypeRest> entities = controller.getEntities();
 		
 		assertEquals(1, entities.size());
@@ -54,7 +54,7 @@ public class DeployEntityTypeTest {
 	public void testOneEntityTypeWithPropertiesGetEntities() {
 		Long id = DomainModelContainer.deploy(CustomerDetails.class);
 		
-		EntityTypeRest expected = TestHelper.createEntityTypeRest("CustomerDetails");
+		EntityTypeRest expected = TestHelper.createEntityTypeRest(id, "CustomerDetails");
 		List<EntityTypeRest> entities = controller.getEntities();
 		
 		assertEquals(1, entities.size());
@@ -68,7 +68,7 @@ public class DeployEntityTypeTest {
 	public void testOneEntityTypeGetEntity() {
 		Long id = DomainModelContainer.deploy(CustomerDetails.class);
 		
-		EntityTypeRest expected = TestHelper.createEntityTypeRest("CustomerDetails");
+		EntityTypeRest expected = TestHelper.createEntityTypeRest(id, "CustomerDetails");
 		TestHelper.addPropertyTypeRest(expected, "name", PropertyTypeType.string);
 		TestHelper.addPropertyTypeRest(expected, "ssn", PropertyTypeType.string);
 		TestHelper.addPropertyTypeRest(expected, "birthdate", PropertyTypeType.date);
