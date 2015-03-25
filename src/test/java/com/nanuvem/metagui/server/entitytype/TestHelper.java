@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.google.gson.Gson;
 import com.nanuvem.metagui.server.controller.EntityTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
@@ -38,6 +39,11 @@ public class TestHelper {
 	public static ResultActions get(MockMvc mockMvc, String url) throws Exception {
 		return mockMvc.perform(MockMvcRequestBuilders.get(url)
 				.accept(MediaType.APPLICATION_JSON));
+	}
+	
+	public static ResultActions post(MockMvc mockMvc, String url, Object instance) throws Exception {
+		return mockMvc.perform(MockMvcRequestBuilders.post(url)
+				.accept(MediaType.APPLICATION_JSON).content(new Gson().toJson(instance)));
 	}
 
 	public static ResultMatcher entityType(final int position, final int id, final String name) {

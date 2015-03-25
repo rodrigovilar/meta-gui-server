@@ -2,11 +2,14 @@ package com.nanuvem.metagui.server.entitytype;
 
 import static com.nanuvem.metagui.server.entitytype.TestHelper.entityType;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.get;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.post;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.propertyType;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
+
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
@@ -96,8 +99,21 @@ public class DeployEntityTypeRestTest {
 	
 	@DirtiesContext
 	@Test
-	public void testOperationalCRUD() {
-//		Long id = DomainModelContainer.deploy(CustomerDetails.class);
+	public void testOperationalCRUD() throws Exception {
+		int id = (int) DomainModelContainer.deploy(CustomerDetails.class);
+		
+		CustomerDetails instance = new CustomerDetails();
+		instance.setName("FooName");
+		instance.setSsn("00000000000");
+		instance.setBirthdate(new Date());
+		instance.setCredit(0);
+		
+		post(mockMvc, "/api/" + id, instance).andExpect(status().isCreated())
+		.andExpect(entityType(id, "CustomerDetails"))
+		.andExpect(propertyType(0, "name", PropertyTypeType.string))
+		.andExpect(propertyType(1, "ssn", PropertyTypeType.string))
+		.andExpect(propertyType(2, "birthdate", PropertyTypeType.date))
+		.andExpect(propertyType(3, "credit", PropertyTypeType.real));
 //		
 //TODO		operationalController.create(id, "{\"name\":\"John\", \"ssn\":\"123\"}");
 //		assertEquals("[{\"name\":\"John\",\"ssn\":\"123\",\"credit\":0.0}]", operationalController.getAll(id));

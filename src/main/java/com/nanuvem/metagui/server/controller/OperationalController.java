@@ -3,6 +3,8 @@ package com.nanuvem.metagui.server.controller;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,10 +30,12 @@ public class OperationalController {
 	}
 	
 	@RequestMapping(value = "/api/{classID}", method = RequestMethod.POST)
-	public void create(@PathVariable Long classID, @RequestBody String input) {
+	@ResponseBody
+	public ResponseEntity<?> create(@PathVariable Long classID, @RequestBody String input) {
 		EntityType domain = DomainModelContainer.getDomain(classID);
 		Object instance = new Gson().fromJson(input, domain.getClass());
 		DomainModelContainer.addInstance(classID, instance);
+        return new ResponseEntity<Object>(instance, HttpStatus.CREATED);
 	}
 
 
