@@ -33,7 +33,7 @@ public class OperationalController {
 	@ResponseBody
 	public ResponseEntity<?> create(@PathVariable Long classID, @RequestBody String input) {
 		EntityType domain = DomainModelContainer.getDomain(classID);
-		Object instance = new Gson().fromJson(input, domain.getClass());
+		Object instance = new Gson().fromJson(input, domain.getClazz());
 		DomainModelContainer.addInstance(classID, instance);
         return new ResponseEntity<Object>(instance, HttpStatus.CREATED);
 	}

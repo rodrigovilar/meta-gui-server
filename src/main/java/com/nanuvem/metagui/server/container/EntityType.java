@@ -1,11 +1,26 @@
 package com.nanuvem.metagui.server.container;
 
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+@Entity
 public class EntityType {
 
+	@OneToMany
+    private Set<Instance> instances = new HashSet<Instance>();
+	
+	@Id
+	@GeneratedValue
 	private long id;
 	private String name;
 	private Class<?> clazz;
+	
+	EntityType () {}
 
 	public long getId() {
 		return id;
@@ -67,13 +82,12 @@ public class EntityType {
 		return true;
 	}
 
-	public static EntityType entityTypeFromClass(Class<?> domain, Long id) {
+	public static EntityType entityTypeFromClass(Class<?> domain) {
 		if (domain == null)
 			return null;
 
 		EntityType entityType = new EntityType();
 		entityType.setName(domain.getSimpleName());
-		entityType.setId(id);
 		entityType.setClazz(domain);
 
 		return entityType;

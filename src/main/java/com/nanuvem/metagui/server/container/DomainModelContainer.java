@@ -1,28 +1,33 @@
 package com.nanuvem.metagui.server.container;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class DomainModelContainer {
 
-	private static Long counter = 0l;
 	private static Map<Long, EntityType> entities = new HashMap<Long, EntityType>();
 	private static Map<Long, List<Object>> instances = new HashMap<Long, List<Object>>();
 	
-	public static long deploy(Class<?> entityType) {
-		entities.put(++counter, EntityType.entityTypeFromClass(entityType, counter));
-		instances.put(counter, new ArrayList<Object>());
-		return counter;
+	@Autowired
+	private static EntityTypeRepository entityTypeRepository;
+	
+	public static long deploy(Class<?> clazz) {
+		EntityType entityType = EntityType.entityTypeFromClass(clazz);
+		entityType = entityTypeRepository.save(entityType);
+		return entityType.getId();
 	}
 	
-	public static List<EntityType> getDomains() {
-		return new ArrayList<EntityType>(entities.values());
+	public static Iterable<EntityType> getDomains() {
+		return entityTypeRepository.findAll();
 	}
 	
 	public static EntityType getDomain(Long id) {
-		return entities.get(id);
+		return entityTypeRepository.findOne(id);
 	}
 	
 	public static void addInstance(Long id, Object instance) {
@@ -34,7 +39,6 @@ public class DomainModelContainer {
 	}
 	
 	public static void clear() {
-		counter = 0l;
 		entities.clear();
 		instances.clear();
 	}

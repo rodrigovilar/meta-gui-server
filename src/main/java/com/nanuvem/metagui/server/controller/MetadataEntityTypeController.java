@@ -20,7 +20,7 @@ public class MetadataEntityTypeController {
 	@ResponseBody
 	public List<EntityTypeRest> getEntities() {
 		List<EntityTypeRest> entities = new ArrayList<EntityTypeRest>();
-		List<EntityType> domains = DomainModelContainer.getDomains();
+		Iterable<EntityType> domains = DomainModelContainer.getDomains();
 		
 		for(EntityType domain : domains) {
 			entities.add(EntityTypeRest.toRest(domain, false));

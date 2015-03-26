@@ -2,6 +2,13 @@ package com.nanuvem.metagui.server.entitytype;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -75,6 +82,29 @@ public class TestHelper {
 				jsonPath("$.properties[" + propertyTypePosition + "].type").value(type.name()).match(result);
 			}
 		};
+	}
+	
+	public static ResultMatcher instance(final Map<String, Object> instanceMap) {
+		return new ResultMatcher() {
+			@Override
+			public void match(MvcResult result) throws Exception {
+				for(String key : instanceMap.keySet()) {
+					Object value = instanceMap.get(key);
+					jsonPath("$." + key).value(value).match(result);
+				}
+			}
+		};
+	}
+	
+	public static Map<String, Object> objectToMap(Object obj) throws Exception {
+	    Map<String, Object> result = new HashMap<String, Object>();
+	    BeanInfo info = Introspector.getBeanInfo(obj.getClass());
+	    for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
+	        Method reader = pd.getReadMethod();
+	        if (reader != null)
+	            result.put(pd.getName(), reader.invoke(obj));
+	    }
+	    return result;
 	}
 
 }
