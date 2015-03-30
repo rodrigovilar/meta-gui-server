@@ -11,6 +11,5 @@ import java.lang.annotation.Target;
 public @interface EntityType {
 
 	String resource() default "";
-	Class<?> repository();
 	
 }

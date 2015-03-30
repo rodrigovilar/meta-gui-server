@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 import java.util.Date;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -58,6 +60,7 @@ public class DeployEntityTypeRestTest {
 				operationalController).build();
 		
 		DomainModelContainer.setApplicationContext(applicationContext);
+		DomainModelContainer.setEntityManagerFactory(applicationContext.getBean(EntityManagerFactory.class));
 	}
 
 	@After
@@ -98,10 +101,11 @@ public class DeployEntityTypeRestTest {
 
 		get(mockMvc, "/entities/" + id).andExpect(status().isOk())
 				.andExpect(entityType(id, "CustomerDetails"))
-				.andExpect(propertyType(0, "ssn", PropertyTypeType.string))
-				.andExpect(propertyType(1, "name", PropertyTypeType.string))
-				.andExpect(propertyType(2, "birthdate", PropertyTypeType.date))
-				.andExpect(propertyType(3, "credit", PropertyTypeType.real));
+				.andExpect(propertyType(0, "id", PropertyTypeType.integer))
+				.andExpect(propertyType(1, "ssn", PropertyTypeType.string))
+				.andExpect(propertyType(2, "name", PropertyTypeType.string))
+				.andExpect(propertyType(3, "birthdate", PropertyTypeType.date))
+				.andExpect(propertyType(4, "credit", PropertyTypeType.real));
 
 		get(mockMvc, "/api/" + id).andExpect(status().isOk()).andExpect(
 				jsonPath("$", hasSize(0)));
@@ -114,7 +118,7 @@ public class DeployEntityTypeRestTest {
 
 		CustomerDetails customer = new CustomerDetails();
 		String name = "FooName";
-		String ssn = "00000000000";
+		String ssn = null;
 		Date birthdate = new Date();
 		int credit = 0;
 		customer.setName(name);
