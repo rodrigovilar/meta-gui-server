@@ -6,6 +6,8 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +52,11 @@ public class TestHelper {
 	
 	public static ResultActions post(MockMvc mockMvc, String url, Object instance) throws Exception {
 		return mockMvc.perform(MockMvcRequestBuilders.post(url)
+				.accept(MediaType.APPLICATION_JSON).content(new Gson().toJson(instance)));
+	}
+	
+	public static ResultActions put(MockMvc mockMvc, String url, Object instance) throws Exception {
+		return mockMvc.perform(MockMvcRequestBuilders.put(url)
 				.accept(MediaType.APPLICATION_JSON).content(new Gson().toJson(instance)));
 	}
 
@@ -101,10 +108,17 @@ public class TestHelper {
 	    BeanInfo info = Introspector.getBeanInfo(obj.getClass());
 	    for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
 	        Method reader = pd.getReadMethod();
-	        if (reader != null)
+	        if (reader != null && !pd.getName().equals("class"))
 	            result.put(pd.getName(), reader.invoke(obj));
 	    }
 	    return result;
+	}
+	
+	public static Date getDate(int year, int month, int day, int hour, int minute, int second) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(0);
+		cal.set(year, month, day, hour, minute, second);
+		return cal.getTime(); 
 	}
 
 }

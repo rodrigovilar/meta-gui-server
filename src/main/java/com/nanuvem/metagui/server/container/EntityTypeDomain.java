@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.nanuvem.metagui.server.annotations.EntityType;
+
 @Entity
 public class EntityTypeDomain {
 
@@ -89,6 +91,7 @@ public class EntityTypeDomain {
 		EntityTypeDomain entityType = new EntityTypeDomain();
 		entityType.setName(domain.getSimpleName());
 		entityType.setClazz(domain);
+		entityType.resource = domain.getAnnotation(EntityType.class).resource();
 
 		return entityType;
 	}

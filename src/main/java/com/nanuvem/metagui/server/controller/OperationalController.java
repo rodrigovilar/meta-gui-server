@@ -1,6 +1,6 @@
 package com.nanuvem.metagui.server.controller;
 
-import java.util.List;
+import java.io.Serializable;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
@@ -15,26 +15,35 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
-import com.nanuvem.metagui.server.controller.util.ListParameterizedType;
 
 @Controller
 @EnableAutoConfiguration
+@RequestMapping(value = "/api/{resource}")
 public class OperationalController {
 
-	@RequestMapping(value = "/api/{classID}", method = RequestMethod.GET)
+	@SuppressWarnings("unchecked")
+	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public String getAll(@PathVariable Long classID) {
-		EntityTypeDomain domain = DomainModelContainer.getDomain(classID);
-		List<Object> instances = DomainModelContainer.getInstances(classID);
-		return new Gson().toJson(instances, new ListParameterizedType(domain.getClazz()));
+	public <T> ResponseEntity<T[]> getAll(@PathVariable String resource) {
+		T[] instances = (T[]) DomainModelContainer.getInstances(resource).toArray();
+		return new ResponseEntity<T[]>(instances, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/api/{classID}", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<?> create(@PathVariable Long classID, @RequestBody String input) {
-		EntityTypeDomain domain = DomainModelContainer.getDomain(classID);
-		Object instance = new Gson().fromJson(input, domain.getClazz());
-		DomainModelContainer.addInstance(classID, instance);
+	public ResponseEntity<?> create(@PathVariable String resource, @RequestBody String input) {
+		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
+		Object instance = new Gson().fromJson(input, entityType.getClazz());
+		instance = DomainModelContainer.addInstance(resource, instance);
+        return new ResponseEntity<Object>(instance, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value = "{instanceId}", method = RequestMethod.PUT)
+	@ResponseBody
+	public ResponseEntity<?> update(@PathVariable String resource, @PathVariable Integer instanceId, @RequestBody String input) {
+		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
+		Object instance = new Gson().fromJson(input, entityType.getClazz());
+		instance = DomainModelContainer.updateInstance(resource, instance, instanceId);
         return new ResponseEntity<Object>(instance, HttpStatus.CREATED);
 	}
 

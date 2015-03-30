@@ -4,8 +4,10 @@ import static com.nanuvem.metagui.server.entitytype.TestHelper.entityType;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.get;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.instance;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.objectToMap;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.getDate;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.post;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.propertyType;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.put;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -77,7 +79,7 @@ public class DeployEntityTypeRestTest {
 				.andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(entityType(0, id, "Customer"));
 
-		get(mockMvc, "/api/" + id).andExpect(status().isOk()).andExpect(
+		get(mockMvc, "/api/" + "customer").andExpect(status().isOk()).andExpect(
 				jsonPath("$", hasSize(0)));
 	}
 
@@ -90,7 +92,7 @@ public class DeployEntityTypeRestTest {
 				.andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(entityType(0, id, "CustomerDetails"));
 
-		get(mockMvc, "/api/" + id).andExpect(status().isOk()).andExpect(
+		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk()).andExpect(
 				jsonPath("$", hasSize(0)));
 	}
 
@@ -107,19 +109,19 @@ public class DeployEntityTypeRestTest {
 				.andExpect(propertyType(3, "birthdate", PropertyTypeType.date))
 				.andExpect(propertyType(4, "credit", PropertyTypeType.real));
 
-		get(mockMvc, "/api/" + id).andExpect(status().isOk()).andExpect(
+		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk()).andExpect(
 				jsonPath("$", hasSize(0)));
 	}
 
 	@DirtiesContext
 	@Test
 	public void testOperationalCRUD() throws Exception {
-		int id = (int) DomainModelContainer.deploy(CustomerDetails.class);
+		DomainModelContainer.deploy(CustomerDetails.class);
 
 		CustomerDetails customer = new CustomerDetails();
 		String name = "FooName";
 		String ssn = null;
-		Date birthdate = new Date();
+		Date birthdate = getDate(2015, 01, 01, 0, 0, 0);
 		int credit = 0;
 		customer.setName(name);
 		customer.setSsn(ssn);
@@ -129,13 +131,16 @@ public class DeployEntityTypeRestTest {
 		Map<String, Object> instanceMap = objectToMap(customer);
 		instanceMap.put("birthdate", birthdate.getTime());
 		
-		post(mockMvc, "/api/" + id, customer).andExpect(status().isCreated())
+		post(mockMvc, "/api/" + "customerDetails", customer).andExpect(status().isCreated())
 				.andExpect(instance(instanceMap));
-		//
-		// TODO operationalController.create(id,
-		// "{\"name\":\"John\", \"ssn\":\"123\"}");
-		// assertEquals("[{\"name\":\"John\",\"ssn\":\"123\",\"credit\":0.0}]",
-		// operationalController.getAll(id));
+		
+		name = "OtherFooName";
+		customer.setName(name);
+		
+		instanceMap = objectToMap(customer);
+		
+		put(mockMvc, "/api/" + "customerDetails/" + 0, customer).andExpect(status().isCreated())
+		.andExpect(instance(instanceMap));
 	}
 
 }

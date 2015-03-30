@@ -19,7 +19,7 @@ import com.nanuvem.metagui.server.annotations.EntityType;
 @Component
 public class DomainModelContainer {
 
-	private static Map<EntityTypeDomain, JpaRepository<?, ?>> repositories = new HashMap<EntityTypeDomain, JpaRepository<?,?>>();
+	private static Map<String, JpaRepository<?, ?>> repositories = new HashMap<String, JpaRepository<?,?>>();
 	
 	@Autowired
 	private static ApplicationContext applicationContext;
@@ -40,15 +40,14 @@ public class DomainModelContainer {
 	public static <T> long deploy(Class<T> clazz) {
 		EntityType annotation = clazz.getAnnotation(EntityType.class);
 		String resource = annotation.resource();
-
 		JpaRepository<T, ?> repository = new SimpleJpaRepository<T,Serializable>(clazz, entityManagerFactory.createEntityManager());
 		
 		EntityTypeRepository entityTypeRepository = getEntityTypeRepository();
-
 		EntityTypeDomain entityType = EntityTypeDomain
 				.entityTypeFromClass(clazz);
+		
 		entityType = entityTypeRepository.save(entityType);
-		repositories.put(entityType, repository);
+		repositories.put(resource, repository);
 		return entityType.getId();
 	}
 
@@ -63,17 +62,31 @@ public class DomainModelContainer {
 	public static EntityTypeDomain getDomain(Long id) {
 		return getEntityTypeRepository().findOne(id);
 	}
-
-	public static <T> void addInstance(Long entityTypeId, T instance) {
-		EntityTypeDomain entityTypeDomain = getEntityTypeRepository().findOne(entityTypeId);
-		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(entityTypeDomain);
-		repository.save(instance);
+	
+	public static EntityTypeDomain getDomain(String resource) {
+		List<EntityTypeDomain> entitiesTypeDomain = getEntityTypeRepository().findByResource(resource);
+		if(entitiesTypeDomain.size() > 0) {
+			return entitiesTypeDomain.get(0);
+		}
+		return null;
 	}
 
-	public static <T> List<T> getInstances(Long entityTypeId) {
-		EntityTypeDomain entityTypeDomain = getEntityTypeRepository().findOne(entityTypeId);
-		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(entityTypeDomain);
+	public static <T> T addInstance(String resource, T instance) {
+		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(resource);
+		return repository.save(instance);
+	}
+
+	public static <T> List<T> getInstances(String resource) {
+		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(resource);
 		return repository.findAll();
+	}
+	
+	public static <T, U extends Serializable> T updateInstance(String resource, T newInstance, U id) {
+		JpaRepository<T, U> repository = (JpaRepository<T, U>) repositories.get(resource);
+		T instance = repository.findOne(id);
+		if(instance != null)
+			return repository.save(newInstance);
+		return null;
 	}
 
 	public static void clear() {
