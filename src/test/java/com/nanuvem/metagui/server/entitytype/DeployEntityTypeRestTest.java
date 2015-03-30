@@ -18,15 +18,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.nanuvem.metagui.server.MetaGuiEntryPoint;
@@ -35,9 +35,9 @@ import com.nanuvem.metagui.server.controller.MetadataEntityTypeController;
 import com.nanuvem.metagui.server.controller.OperationalController;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetaGuiEntryPoint.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@EnableJpaRepositories(basePackages = {"com.nanuvem.metagui.server.container"})
 public class DeployEntityTypeRestTest {
 
 	MockMvc mockMvc;
@@ -47,12 +47,17 @@ public class DeployEntityTypeRestTest {
 
 	@InjectMocks
 	OperationalController operationalController;
-
+	
+	@Autowired
+	ApplicationContext applicationContext;
+	
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = standaloneSetup(metadataController,
 				operationalController).build();
+		
+		DomainModelContainer.setApplicationContext(applicationContext);
 	}
 
 	@After
@@ -93,8 +98,8 @@ public class DeployEntityTypeRestTest {
 
 		get(mockMvc, "/entities/" + id).andExpect(status().isOk())
 				.andExpect(entityType(id, "CustomerDetails"))
-				.andExpect(propertyType(0, "name", PropertyTypeType.string))
-				.andExpect(propertyType(1, "ssn", PropertyTypeType.string))
+				.andExpect(propertyType(0, "ssn", PropertyTypeType.string))
+				.andExpect(propertyType(1, "name", PropertyTypeType.string))
 				.andExpect(propertyType(2, "birthdate", PropertyTypeType.date))
 				.andExpect(propertyType(3, "credit", PropertyTypeType.real));
 

@@ -2,10 +2,20 @@ package com.nanuvem.metagui.server.entitytype;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import com.nanuvem.metagui.server.annotations.EntityType;
+import com.nanuvem.metagui.server.repository.CustomerDetailsRepository;
+
+@EntityType(resource = "customerDetails", repository = CustomerDetailsRepository.class)
+@Entity
 public class CustomerDetails {
 
-	private String name;
+	@Id
 	private String ssn;
+	
+	private String name;
 	private Date birthdate;
 	private double credit;
 

@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nanuvem.metagui.server.container.EntityType;
+import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
 public class EntityTypeRest {
 
@@ -71,7 +71,7 @@ public class EntityTypeRest {
 		return true;
 	}
 
-	public static EntityTypeRest toRest(EntityType domain,
+	public static EntityTypeRest toRest(EntityTypeDomain domain,
 			boolean withProperties) {
 		if (domain == null)
 			return null;

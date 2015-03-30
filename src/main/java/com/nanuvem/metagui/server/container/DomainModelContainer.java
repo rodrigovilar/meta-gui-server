@@ -4,43 +4,70 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import com.nanuvem.metagui.server.annotations.EntityType;
+
+@SuppressWarnings("unchecked")
 @Component
 public class DomainModelContainer {
 
-	private static Map<Long, EntityType> entities = new HashMap<Long, EntityType>();
-	private static Map<Long, List<Object>> instances = new HashMap<Long, List<Object>>();
+	private static Map<EntityTypeDomain, JpaRepository<?, ?>> repositories = new HashMap<EntityTypeDomain, JpaRepository<?,?>>();
 	
-	@Autowired
-	private static EntityTypeRepository entityTypeRepository;
-	
+	private static ApplicationContext applicationContext;
+
+	public static void setApplicationContext(
+			ApplicationContext applicationContext) {
+		DomainModelContainer.applicationContext = applicationContext;
+
+	}
+
 	public static long deploy(Class<?> clazz) {
-		EntityType entityType = EntityType.entityTypeFromClass(clazz);
+		EntityType annotation = clazz.getAnnotation(EntityType.class);
+		String resource = annotation.resource();
+		Class<?> repositoryType = annotation.repository();
+
+		JpaRepository<?, ?> repository = (JpaRepository<?, ?>) applicationContext
+				.getBean(repositoryType);
+		
+		EntityTypeRepository entityTypeRepository = getEntityTypeRepository();
+
+		EntityTypeDomain entityType = EntityTypeDomain
+				.entityTypeFromClass(clazz);
 		entityType = entityTypeRepository.save(entityType);
+		repositories.put(entityType, repository);
 		return entityType.getId();
 	}
-	
-	public static Iterable<EntityType> getDomains() {
-		return entityTypeRepository.findAll();
+
+	public static EntityTypeRepository getEntityTypeRepository() {
+		return applicationContext.getBean(EntityTypeRepository.class);
 	}
-	
-	public static EntityType getDomain(Long id) {
-		return entityTypeRepository.findOne(id);
+
+	public static Iterable<EntityTypeDomain> getDomains() {
+		return getEntityTypeRepository().findAll();
 	}
-	
-	public static void addInstance(Long id, Object instance) {
-		instances.get(id).add(instance);
+
+	public static EntityTypeDomain getDomain(Long id) {
+		return getEntityTypeRepository().findOne(id);
 	}
-	
-	public static List<Object> getInstances(Long id) {
-		return instances.get(id);
+
+	public static <T> void addInstance(Long entityTypeId, T instance) {
+		EntityTypeDomain entityTypeDomain = getEntityTypeRepository().findOne(entityTypeId);
+		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(entityTypeDomain);
+		repository.save(instance);
 	}
-	
+
+	public static <T> List<T> getInstances(Long entityTypeId) {
+		EntityTypeDomain entityTypeDomain = getEntityTypeRepository().findOne(entityTypeId);
+		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(entityTypeDomain);
+		return repository.findAll();
+	}
+
 	public static void clear() {
-		entities.clear();
-		instances.clear();
+		getEntityTypeRepository().deleteAll();
+		repositories.clear();
 	}
 
 }

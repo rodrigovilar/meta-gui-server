@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.nanuvem.metagui.server.container.DomainModelContainer;
-import com.nanuvem.metagui.server.container.EntityType;
+import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
 @Controller
 @EnableAutoConfiguration
@@ -20,9 +20,9 @@ public class MetadataEntityTypeController {
 	@ResponseBody
 	public List<EntityTypeRest> getEntities() {
 		List<EntityTypeRest> entities = new ArrayList<EntityTypeRest>();
-		Iterable<EntityType> domains = DomainModelContainer.getDomains();
+		Iterable<EntityTypeDomain> domains = DomainModelContainer.getDomains();
 		
-		for(EntityType domain : domains) {
+		for(EntityTypeDomain domain : domains) {
 			entities.add(EntityTypeRest.toRest(domain, false));
 		}
 		

@@ -1,26 +1,20 @@
 package com.nanuvem.metagui.server.container;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 @Entity
-public class EntityType {
+public class EntityTypeDomain {
 
-	@OneToMany
-    private Set<Instance> instances = new HashSet<Instance>();
-	
 	@Id
 	@GeneratedValue
 	private long id;
 	private String name;
 	private Class<?> clazz;
+	private String resource;
 	
-	EntityType () {}
+	EntityTypeDomain () {}
 
 	public long getId() {
 		return id;
@@ -46,7 +40,13 @@ public class EntityType {
 		this.clazz = clazz;
 	}
 
-	
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
+	}
 
 	@Override
 	public int hashCode() {
@@ -66,7 +66,7 @@ public class EntityType {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EntityType other = (EntityType) obj;
+		EntityTypeDomain other = (EntityTypeDomain) obj;
 		if (clazz == null) {
 			if (other.clazz != null)
 				return false;
@@ -82,11 +82,11 @@ public class EntityType {
 		return true;
 	}
 
-	public static EntityType entityTypeFromClass(Class<?> domain) {
+	public static EntityTypeDomain entityTypeFromClass(Class<?> domain) {
 		if (domain == null)
 			return null;
 
-		EntityType entityType = new EntityType();
+		EntityTypeDomain entityType = new EntityTypeDomain();
 		entityType.setName(domain.getSimpleName());
 		entityType.setClazz(domain);
 

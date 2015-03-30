@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
-import com.nanuvem.metagui.server.container.EntityType;
+import com.nanuvem.metagui.server.container.EntityTypeDomain;
 import com.nanuvem.metagui.server.controller.util.ListParameterizedType;
 
 @Controller
@@ -24,7 +24,7 @@ public class OperationalController {
 	@RequestMapping(value = "/api/{classID}", method = RequestMethod.GET)
 	@ResponseBody
 	public String getAll(@PathVariable Long classID) {
-		EntityType domain = DomainModelContainer.getDomain(classID);
+		EntityTypeDomain domain = DomainModelContainer.getDomain(classID);
 		List<Object> instances = DomainModelContainer.getInstances(classID);
 		return new Gson().toJson(instances, new ListParameterizedType(domain.getClazz()));
 	}
@@ -32,7 +32,7 @@ public class OperationalController {
 	@RequestMapping(value = "/api/{classID}", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<?> create(@PathVariable Long classID, @RequestBody String input) {
-		EntityType domain = DomainModelContainer.getDomain(classID);
+		EntityTypeDomain domain = DomainModelContainer.getDomain(classID);
 		Object instance = new Gson().fromJson(input, domain.getClazz());
 		DomainModelContainer.addInstance(classID, instance);
         return new ResponseEntity<Object>(instance, HttpStatus.CREATED);

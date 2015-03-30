@@ -1,19 +1,19 @@
 package com.nanuvem.metagui.server;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 
-@Configuration
-@EnableAutoConfiguration
-@ComponentScan(basePackages={"com.nanuvem.metagui.server.controller", "com.nanuvem.metagui.server.container"})
-@EnableJpaRepositories(basePackages = {"com.nanuvem.metagui.server.container"})
+import com.nanuvem.metagui.server.container.DomainModelContainer;
+
+@SpringBootApplication
+@ConfigurationProperties
 public class MetaGuiEntryPoint {
 
 	public static void run(String[] args) {
-		SpringApplication.run(MetaGuiEntryPoint.class, args);
+		ConfigurableApplicationContext run = SpringApplication.run(MetaGuiEntryPoint.class, args);
+		DomainModelContainer.setApplicationContext(run);
 	}
 	
 	public static void main(String[] args) {
