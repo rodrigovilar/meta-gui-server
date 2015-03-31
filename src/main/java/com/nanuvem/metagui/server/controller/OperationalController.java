@@ -1,7 +1,5 @@
 package com.nanuvem.metagui.server.controller;
 
-import java.io.Serializable;
-
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +38,7 @@ public class OperationalController {
 	
 	@RequestMapping(value = "{instanceId}", method = RequestMethod.PUT)
 	@ResponseBody
-	public ResponseEntity<?> update(@PathVariable String resource, @PathVariable Integer instanceId, @RequestBody String input) {
+	public ResponseEntity<?> update(@PathVariable String resource, @PathVariable int instanceId, @RequestBody String input) {
 		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
 		Object instance = new Gson().fromJson(input, entityType.getClazz());
 		instance = DomainModelContainer.updateInstance(resource, instance, instanceId);

@@ -2,12 +2,14 @@ package com.nanuvem.metagui.server.entitytype;
 
 import static com.nanuvem.metagui.server.entitytype.TestHelper.entityType;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.get;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.getDate;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.instance;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.objectToMap;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.getDate;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.post;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.propertyType;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.put;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.delete;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.getObjectFromResult;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,6 +34,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.nanuvem.metagui.server.MetaGuiEntryPoint;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
@@ -131,16 +134,28 @@ public class DeployEntityTypeRestTest {
 		Map<String, Object> instanceMap = objectToMap(customer);
 		instanceMap.put("birthdate", birthdate.getTime());
 		
-		post(mockMvc, "/api/" + "customerDetails", customer).andExpect(status().isCreated())
-				.andExpect(instance(instanceMap));
+		MvcResult result = post(mockMvc, "/api/" + "customerDetails", customer).andExpect(status().isCreated())
+				.andExpect(instance(instanceMap)).andReturn();
+		customer = getObjectFromResult(result, CustomerDetails.class);
 		
 		name = "OtherFooName";
 		customer.setName(name);
 		
 		instanceMap = objectToMap(customer);
 		
-		put(mockMvc, "/api/" + "customerDetails/" + 0, customer).andExpect(status().isCreated())
+		put(mockMvc, "/api/" + "customerDetails/" + customer.getId(), customer).andExpect(status().isCreated())
 		.andExpect(instance(instanceMap));
+		
+		get(mockMvc, "/api/" + "customerDetails/" + customer.getId()).andExpect(status().isOk()).andExpect(
+				instance(instanceMap));
+		
+		delete(mockMvc, "/api/" + "customerDetails/" + customer.getId()).andExpect(status().isOk());
+		
+		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk()).andExpect(
+				jsonPath("$", hasSize(0)));
+		
+		get(mockMvc, "/api/" + "customerDetails/" + customer.getId()).andExpect(status().isNotFound());
+		
 	}
 
 }

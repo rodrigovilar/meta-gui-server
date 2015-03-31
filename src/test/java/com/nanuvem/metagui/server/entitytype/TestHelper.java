@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.nanuvem.metagui.server.controller.EntityTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
@@ -58,6 +60,11 @@ public class TestHelper {
 	public static ResultActions put(MockMvc mockMvc, String url, Object instance) throws Exception {
 		return mockMvc.perform(MockMvcRequestBuilders.put(url)
 				.accept(MediaType.APPLICATION_JSON).content(new Gson().toJson(instance)));
+	}
+	
+	public static ResultActions delete(MockMvc mockMvc, String url) throws Exception {
+		return mockMvc.perform(MockMvcRequestBuilders.delete(url)
+				.accept(MediaType.APPLICATION_JSON));
 	}
 
 	public static ResultMatcher entityType(final int position, final int id, final String name) {
@@ -119,6 +126,10 @@ public class TestHelper {
 		cal.setTimeInMillis(0);
 		cal.set(year, month, day, hour, minute, second);
 		return cal.getTime(); 
+	}
+	
+	public static <T> T getObjectFromResult(MvcResult result, Class<T> type) throws JsonSyntaxException, UnsupportedEncodingException {
+		return new Gson().fromJson(result.getResponse().getContentAsString(), type);
 	}
 
 }

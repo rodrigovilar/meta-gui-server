@@ -73,7 +73,7 @@ public class DomainModelContainer {
 
 	public static <T> T addInstance(String resource, T instance) {
 		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories.get(resource);
-		return repository.save(instance);
+		return repository.saveAndFlush(instance);
 	}
 
 	public static <T> List<T> getInstances(String resource) {
@@ -85,7 +85,7 @@ public class DomainModelContainer {
 		JpaRepository<T, U> repository = (JpaRepository<T, U>) repositories.get(resource);
 		T instance = repository.findOne(id);
 		if(instance != null)
-			return repository.save(newInstance);
+			return repository.saveAndFlush(newInstance);
 		return null;
 	}
 
