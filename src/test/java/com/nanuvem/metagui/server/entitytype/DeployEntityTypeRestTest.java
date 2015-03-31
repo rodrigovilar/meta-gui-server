@@ -18,8 +18,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 import java.util.Date;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -54,18 +52,17 @@ public class DeployEntityTypeRestTest {
 
 	@InjectMocks
 	OperationalController operationalController;
-	
+
 	@Autowired
 	ApplicationContext applicationContext;
-	
+
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = standaloneSetup(metadataController,
 				operationalController).build();
-		
+
 		DomainModelContainer.setApplicationContext(applicationContext);
-		DomainModelContainer.setEntityManagerFactory(applicationContext.getBean(EntityManagerFactory.class));
 	}
 
 	@After
@@ -82,8 +79,8 @@ public class DeployEntityTypeRestTest {
 				.andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(entityType(0, id, "Customer"));
 
-		get(mockMvc, "/api/" + "customer").andExpect(status().isOk()).andExpect(
-				jsonPath("$", hasSize(0)));
+		get(mockMvc, "/api/" + "customer").andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@DirtiesContext
@@ -95,8 +92,8 @@ public class DeployEntityTypeRestTest {
 				.andExpect(jsonPath("$", hasSize(1)))
 				.andExpect(entityType(0, id, "CustomerDetails"));
 
-		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk()).andExpect(
-				jsonPath("$", hasSize(0)));
+		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@DirtiesContext
@@ -112,8 +109,8 @@ public class DeployEntityTypeRestTest {
 				.andExpect(propertyType(3, "birthdate", PropertyTypeType.date))
 				.andExpect(propertyType(4, "credit", PropertyTypeType.real));
 
-		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk()).andExpect(
-				jsonPath("$", hasSize(0)));
+		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@DirtiesContext
@@ -130,32 +127,36 @@ public class DeployEntityTypeRestTest {
 		customer.setSsn(ssn);
 		customer.setBirthdate(birthdate);
 		customer.setCredit(credit);
-		
+
 		Map<String, Object> instanceMap = objectToMap(customer);
 		instanceMap.put("birthdate", birthdate.getTime());
-		
-		MvcResult result = post(mockMvc, "/api/" + "customerDetails", customer).andExpect(status().isCreated())
+
+		MvcResult result = post(mockMvc, "/api/" + "customerDetails", customer)
+				.andExpect(status().isCreated())
 				.andExpect(instance(instanceMap)).andReturn();
 		customer = getObjectFromResult(result, CustomerDetails.class);
-		
+
 		name = "OtherFooName";
 		customer.setName(name);
-		
+
 		instanceMap = objectToMap(customer);
-		
-		put(mockMvc, "/api/" + "customerDetails/" + customer.getId(), customer).andExpect(status().isCreated())
-		.andExpect(instance(instanceMap));
-		
-		get(mockMvc, "/api/" + "customerDetails/" + customer.getId()).andExpect(status().isOk()).andExpect(
-				instance(instanceMap));
-		
-		delete(mockMvc, "/api/" + "customerDetails/" + customer.getId()).andExpect(status().isOk());
-		
-		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk()).andExpect(
-				jsonPath("$", hasSize(0)));
-		
-		get(mockMvc, "/api/" + "customerDetails/" + customer.getId()).andExpect(status().isNotFound());
-		
+
+		put(mockMvc, "/api/" + "customerDetails/" + customer.getId(), customer)
+				.andExpect(status().isCreated()).andExpect(
+						instance(instanceMap));
+
+		get(mockMvc, "/api/" + "customerDetails/" + customer.getId())
+				.andExpect(status().isOk()).andExpect(instance(instanceMap));
+
+		delete(mockMvc, "/api/" + "customerDetails/" + customer.getId())
+				.andExpect(status().isOk());
+
+		get(mockMvc, "/api/" + "customerDetails").andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(0)));
+
+		get(mockMvc, "/api/" + "customerDetails/" + customer.getId())
+				.andExpect(status().isNotFound());
+
 	}
 
 }

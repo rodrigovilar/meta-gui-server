@@ -7,8 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.nanuvem.metagui.server.annotations.EntityType;
+import com.nanuvem.metagui.server.repository.CustomerDetailsRepository;
 
-@EntityType(resource = "customerDetails")
+@EntityType(resource = "customerDetails", repository=CustomerDetailsRepository.class)
 @Entity
 public class CustomerDetails {
 

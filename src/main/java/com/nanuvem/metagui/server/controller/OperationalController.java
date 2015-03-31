@@ -1,6 +1,5 @@
 package com.nanuvem.metagui.server.controller;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,7 +14,6 @@ import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
 @Controller
-@EnableAutoConfiguration
 @RequestMapping(value = "/api/{resource}")
 public class OperationalController {
 
