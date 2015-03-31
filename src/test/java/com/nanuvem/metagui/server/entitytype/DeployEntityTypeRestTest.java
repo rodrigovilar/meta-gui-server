@@ -2,9 +2,9 @@ package com.nanuvem.metagui.server.entitytype;
 
 import static com.nanuvem.metagui.server.entitytype.TestHelper.entityType;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.get;
+import static com.nanuvem.metagui.server.entitytype.TestHelper.getDate;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.instance;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.objectToMap;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.getDate;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.post;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.propertyType;
 import static com.nanuvem.metagui.server.entitytype.TestHelper.put;
@@ -15,8 +15,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 import java.util.Date;
 import java.util.Map;
-
-import javax.persistence.EntityManagerFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -62,7 +60,6 @@ public class DeployEntityTypeRestTest {
 				operationalController).build();
 		
 		DomainModelContainer.setApplicationContext(applicationContext);
-		DomainModelContainer.setEntityManagerFactory(applicationContext.getBean(EntityManagerFactory.class));
 	}
 
 	@After
@@ -131,8 +128,9 @@ public class DeployEntityTypeRestTest {
 		Map<String, Object> instanceMap = objectToMap(customer);
 		instanceMap.put("birthdate", birthdate.getTime());
 		
-		post(mockMvc, "/api/" + "customerDetails", customer).andExpect(status().isCreated())
-				.andExpect(instance(instanceMap));
+		post(mockMvc, "/api/" + "customerDetails", customer)
+			.andExpect(status().isCreated())
+			.andExpect(instance(instanceMap));
 		
 		name = "OtherFooName";
 		customer.setName(name);

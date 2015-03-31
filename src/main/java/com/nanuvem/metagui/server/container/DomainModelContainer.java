@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.nanuvem.metagui.server.annotations.EntityType;
@@ -24,27 +21,24 @@ public class DomainModelContainer {
 	@Autowired
 	private static ApplicationContext applicationContext;
 
-	@Autowired
-	private static EntityManagerFactory entityManagerFactory;
-
 	public static void setApplicationContext(
 			ApplicationContext applicationContext) {
 		DomainModelContainer.applicationContext = applicationContext;
 
 	}
-
-	public static void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-		DomainModelContainer.entityManagerFactory = entityManagerFactory;
-	}
 	
 	public static <T> long deploy(Class<T> clazz) {
 		EntityType annotation = clazz.getAnnotation(EntityType.class);
 		String resource = annotation.resource();
-		JpaRepository<T, ?> repository = new SimpleJpaRepository<T,Serializable>(clazz, entityManagerFactory.createEntityManager());
+		Class<?> repositoryType = annotation.repository();
+		
+		JpaRepository<?, ?> repository = 
+				(JpaRepository<?, ?>) applicationContext.getBean(repositoryType);
+		
 		
 		EntityTypeRepository entityTypeRepository = getEntityTypeRepository();
-		EntityTypeDomain entityType = EntityTypeDomain
-				.entityTypeFromClass(clazz);
+		EntityTypeDomain entityType = 
+				EntityTypeDomain.entityTypeFromClass(clazz);
 		
 		entityType = entityTypeRepository.save(entityType);
 		repositories.put(resource, repository);

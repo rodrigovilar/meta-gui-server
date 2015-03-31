@@ -3,7 +3,6 @@ package com.nanuvem.metagui.server.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,6 @@ import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
 @Controller
-@EnableAutoConfiguration
 public class MetadataEntityTypeController {
 
 	@RequestMapping("/entities")
