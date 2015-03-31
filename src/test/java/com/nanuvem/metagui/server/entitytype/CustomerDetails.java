@@ -3,19 +3,12 @@ package com.nanuvem.metagui.server.entitytype;
 import java.util.Date;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
-import com.nanuvem.metagui.server.annotations.EntityType;
-import com.nanuvem.metagui.server.repository.CustomerDetailsRepository;
+import com.nanuvem.metagui.server.api.EntityType;
 
-@EntityType(resource = "customerDetails", repository=CustomerDetailsRepository.class)
 @Entity
-public class CustomerDetails {
+public class CustomerDetails extends EntityType{
 
-	@GeneratedValue
-	@Id
-	private Integer id;
 	private String ssn;
 	private String name;
 	private Date birthdate;
@@ -27,14 +20,6 @@ public class CustomerDetails {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getSsn() {

@@ -7,6 +7,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +21,11 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.nanuvem.metagui.server.controller.EntityTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeRest;
@@ -129,7 +135,16 @@ public class TestHelper {
 	}
 	
 	public static <T> T getObjectFromResult(MvcResult result, Class<T> type) throws JsonSyntaxException, UnsupportedEncodingException {
-		return new Gson().fromJson(result.getResponse().getContentAsString(), type);
+		Gson gson = new GsonBuilder()
+		   .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+
+			@Override
+			public Date deserialize(JsonElement jsonElement, Type type,
+					JsonDeserializationContext context) throws JsonParseException {
+				return new Date(jsonElement.getAsLong());
+			}
+		}).create();
+		return gson.fromJson(result.getResponse().getContentAsString(), type);
 	}
 
 }

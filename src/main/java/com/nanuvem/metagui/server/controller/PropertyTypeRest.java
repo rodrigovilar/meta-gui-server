@@ -67,16 +67,19 @@ public class PropertyTypeRest {
 		if(typeName.equals("String")){
 			return PropertyTypeType.string;
 		}
-		if(typeName.equals("boolean")){
+		if(typeName.equalsIgnoreCase("boolean")){
 			return PropertyTypeType.bool;
 		}
 		if(typeName.equals("Date")){
 			return PropertyTypeType.date;
 		}
-		if(typeName.equals("double")){
+		if(typeName.equalsIgnoreCase("double")){
 			return PropertyTypeType.real;
 		}
-		if(typeName.equals("int")){
+		if(typeName.equals("int") || typeName.equals("Integer")){
+			return PropertyTypeType.integer;
+		}
+		if(typeName.equalsIgnoreCase("long")){
 			return PropertyTypeType.integer;
 		}
 		return null;

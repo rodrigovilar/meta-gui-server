@@ -39,6 +39,8 @@ import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.controller.MetadataEntityTypeController;
 import com.nanuvem.metagui.server.controller.OperationalController;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
+import com.nanuvem.metagui.server.repository.CustomerDetailsRepository;
+import com.nanuvem.metagui.server.repository.CustomerRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetaGuiEntryPoint.class)
@@ -73,7 +75,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeGetEntities() throws Exception {
-		int id = (int) DomainModelContainer.deploy(Customer.class);
+		int id = (int) DomainModelContainer.deploy("customer", Customer.class, CustomerRepository.class);
 
 		get(mockMvc, "/entities").andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(1)))
@@ -86,7 +88,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeWithPropertiesGetEntities() throws Exception {
-		int id = (int) DomainModelContainer.deploy(CustomerDetails.class);
+		int id = (int) DomainModelContainer.deploy("customerDetails", CustomerDetails.class, CustomerDetailsRepository.class);
 
 		get(mockMvc, "/entities").andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(1)))
@@ -99,7 +101,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeGetEntity() throws Exception {
-		int id = (int) DomainModelContainer.deploy(CustomerDetails.class);
+		int id = (int) DomainModelContainer.deploy("customerDetails", CustomerDetails.class, CustomerDetailsRepository.class);
 
 		get(mockMvc, "/entities/" + id).andExpect(status().isOk())
 				.andExpect(entityType(id, "CustomerDetails"))
@@ -116,7 +118,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOperationalCRUD() throws Exception {
-		DomainModelContainer.deploy(CustomerDetails.class);
+		DomainModelContainer.deploy("customerDetails", CustomerDetails.class, CustomerDetailsRepository.class);
 
 		CustomerDetails customer = new CustomerDetails();
 		String name = "FooName";
@@ -129,6 +131,7 @@ public class DeployEntityTypeRestTest {
 		customer.setCredit(credit);
 
 		Map<String, Object> instanceMap = objectToMap(customer);
+		instanceMap.remove("id");
 		instanceMap.put("birthdate", birthdate.getTime());
 
 		MvcResult result = post(mockMvc, "/api/" + "customerDetails", customer)
@@ -140,10 +143,13 @@ public class DeployEntityTypeRestTest {
 		customer.setName(name);
 
 		instanceMap = objectToMap(customer);
+		instanceMap.put("id", customer.getId().intValue());
+		instanceMap.put("birthdate", birthdate.getTime());
 
-		put(mockMvc, "/api/" + "customerDetails/" + customer.getId(), customer)
+		result = put(mockMvc, "/api/" + "customerDetails/" + customer.getId(), customer)
 				.andExpect(status().isCreated()).andExpect(
-						instance(instanceMap));
+						instance(instanceMap)).andReturn();
+		customer = getObjectFromResult(result, CustomerDetails.class);
 
 		get(mockMvc, "/api/" + "customerDetails/" + customer.getId())
 				.andExpect(status().isOk()).andExpect(instance(instanceMap));

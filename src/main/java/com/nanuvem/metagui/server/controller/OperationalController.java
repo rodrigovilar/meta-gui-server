@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
+import com.nanuvem.metagui.server.api.EntityType;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
@@ -25,23 +26,46 @@ public class OperationalController {
 		return new ResponseEntity<T[]>(instances, HttpStatus.OK);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<?> create(@PathVariable String resource, @RequestBody String input) {
+	public <T extends EntityType> ResponseEntity<T> create(@PathVariable String resource, @RequestBody String input) {
 		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
-		Object instance = new Gson().fromJson(input, entityType.getClazz());
-		instance = DomainModelContainer.addInstance(resource, instance);
-        return new ResponseEntity<Object>(instance, HttpStatus.CREATED);
+		T instance = (T) new Gson().fromJson(input, entityType.getClazz());
+		instance = DomainModelContainer.saveInstance(resource, instance);
+        return new ResponseEntity<T>(instance, HttpStatus.CREATED);
 	}
 	
+	@RequestMapping(value = "{instanceId}", method = RequestMethod.GET)
+	@ResponseBody
+	public <T extends EntityType> ResponseEntity<T> get(@PathVariable String resource, @PathVariable Long instanceId) {
+		T instance = DomainModelContainer.getInstance(resource, instanceId);
+		if(instance == null)
+			return new ResponseEntity<T>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<T>(instance, HttpStatus.OK);
+	}
+	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "{instanceId}", method = RequestMethod.PUT)
 	@ResponseBody
-	public ResponseEntity<?> update(@PathVariable String resource, @PathVariable int instanceId, @RequestBody String input) {
+	public <T extends EntityType> ResponseEntity<T> update(@PathVariable String resource, @PathVariable Long instanceId, @RequestBody String input) {
 		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
-		Object instance = new Gson().fromJson(input, entityType.getClazz());
-		instance = DomainModelContainer.updateInstance(resource, instance, instanceId);
-        return new ResponseEntity<Object>(instance, HttpStatus.CREATED);
+		T instance = DomainModelContainer.getInstance(resource, instanceId);
+		if(instance == null)
+			return new ResponseEntity<T>(HttpStatus.NOT_FOUND);
+		
+		T newInstance = (T) new Gson().fromJson(input, entityType.getClazz());
+		newInstance.setId(instanceId);
+		instance = DomainModelContainer.saveInstance(resource, newInstance);
+        return new ResponseEntity<T>(instance, HttpStatus.CREATED);
 	}
 
+	@RequestMapping(value = "{instanceId}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public ResponseEntity<?> delete(@PathVariable String resource, @PathVariable Long instanceId) {
+		if(DomainModelContainer.deleteInstance(resource, instanceId))
+			return new ResponseEntity<Object>(HttpStatus.OK);
+        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+	}	
 
 }

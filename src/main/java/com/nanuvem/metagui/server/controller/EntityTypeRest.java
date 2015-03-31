@@ -81,6 +81,12 @@ public class EntityTypeRest {
 		entityTypeRest.setId(domain.getId());
 
 		if (withProperties) {
+			//Get EntityType Properties
+			for (Field field : domain.getClazz().getSuperclass().getDeclaredFields()) {
+				PropertyTypeRest propertyTypeRest = PropertyTypeRest
+						.propertyTypeRestFromField(field);
+				entityTypeRest.getProperties().add(propertyTypeRest);
+			}
 			for (Field field : domain.getClazz().getDeclaredFields()) {
 				PropertyTypeRest propertyTypeRest = PropertyTypeRest
 						.propertyTypeRestFromField(field);

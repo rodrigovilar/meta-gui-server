@@ -1,17 +1,10 @@
 package com.nanuvem.metagui.server.entitytype;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
-import com.nanuvem.metagui.server.annotations.EntityType;
-import com.nanuvem.metagui.server.annotations.PropertyType;
-import com.nanuvem.metagui.server.repository.CustomerRepository;
+import com.nanuvem.metagui.server.api.EntityType;
 
-@EntityType(resource = "customer", repository=CustomerRepository.class)
 @Entity
-public class Customer {
+public class Customer extends EntityType {
 
-	@Id
-	@PropertyType(ignore=true)
-	private Long id;
 }
