@@ -1,4 +1,4 @@
-package com.nanuvem.metagui.server.entitytype;
+package com.nanuvem.metagui.server.util;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

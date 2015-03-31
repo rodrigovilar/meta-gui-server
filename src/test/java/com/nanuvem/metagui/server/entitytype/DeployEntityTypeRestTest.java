@@ -1,15 +1,15 @@
 package com.nanuvem.metagui.server.entitytype;
 
-import static com.nanuvem.metagui.server.entitytype.TestHelper.entityType;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.get;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.getDate;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.instance;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.objectToMap;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.post;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.propertyType;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.put;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.delete;
-import static com.nanuvem.metagui.server.entitytype.TestHelper.getObjectFromResult;
+import static com.nanuvem.metagui.server.util.TestHelper.entityType;
+import static com.nanuvem.metagui.server.util.TestHelper.get;
+import static com.nanuvem.metagui.server.util.TestHelper.getDate;
+import static com.nanuvem.metagui.server.util.TestHelper.instance;
+import static com.nanuvem.metagui.server.util.TestHelper.objectToMap;
+import static com.nanuvem.metagui.server.util.TestHelper.post;
+import static com.nanuvem.metagui.server.util.TestHelper.propertyType;
+import static com.nanuvem.metagui.server.util.TestHelper.put;
+import static com.nanuvem.metagui.server.util.TestHelper.delete;
+import static com.nanuvem.metagui.server.util.TestHelper.getObjectFromResult;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
