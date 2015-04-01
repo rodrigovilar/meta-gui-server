@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
@@ -106,11 +107,23 @@ public class TestHelper {
 	
 	public static ResultMatcher instance(final Map<String, Object> instanceMap) {
 		return new ResultMatcher() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void match(MvcResult result) throws Exception {
 				for(String key : instanceMap.keySet()) {
 					Object value = instanceMap.get(key);
-					jsonPath("$." + key).value(value).match(result);
+					
+					if(value instanceof List) {
+						List<Object> list = (List<Object>) value;
+						int i = 0;
+						for(Object item : list) {
+							jsonPath("$." + key + "[" +  i + "]").value(item).match(result);
+							i++;
+						}
+					}
+					else {
+						jsonPath("$." + key).value(value).match(result);
+					}
 				}
 			}
 		};

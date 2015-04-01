@@ -79,7 +79,7 @@ public class RulesControllerTest {
 		instanceMap.remove("id");
 		instanceMap.remove("version");
 		
-		post(mockMvc, "/rules/defaultentityrule", defaultEntityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap)).andReturn();
+		post(mockMvc, "/rules/defaultentityrule", defaultEntityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
 		PropertyTypeRule propertyTypeRule = new PropertyTypeRule();
 		propertyTypeRule.setContext("fooContext2");
@@ -89,7 +89,7 @@ public class RulesControllerTest {
 		instanceMap.remove("version");
 		instanceMap.put("propertyTypeType", propertyTypeRule.getPropertyTypeType().name());
 		
-		post(mockMvc, "/rules/propertytyperule", propertyTypeRule).andExpect(status().isCreated()).andExpect(instance(instanceMap)).andReturn();
+		post(mockMvc, "/rules/propertytyperule", propertyTypeRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
 		PropertyRule propertyRule = new PropertyRule();
 		propertyRule.setContext("fooContext3");
@@ -100,7 +100,7 @@ public class RulesControllerTest {
 		instanceMap.remove("version");
 		instanceMap.put("propertyTypeType", propertyTypeRule.getPropertyTypeType().name());
 		
-		post(mockMvc, "/rules/propertyrule", propertyRule).andExpect(status().isCreated()).andExpect(instance(instanceMap)).andReturn();
+		post(mockMvc, "/rules/propertyrule", propertyRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
 		EntityRule entityRule = new EntityRule();
 		entityRule.setContext("fooContext4");
@@ -109,7 +109,7 @@ public class RulesControllerTest {
 		instanceMap.remove("id");
 		instanceMap.remove("version");
 		
-		post(mockMvc, "/rules/entityrule", entityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap)).andReturn();
+		post(mockMvc, "/rules/entityrule", entityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
 	}
 	
@@ -165,8 +165,33 @@ public class RulesControllerTest {
 		.andExpect(jsonPath("$", hasSize(0)));
 		
 		Widget widget = new Widget();
+		widget.setName("fooName");
 		widget.setScript("fooScript");
 		widget.setContexts(new ArrayList<String>(Arrays.asList("form")));
+		
+		Map<String, Object> widgetInstanceMap = objectToMap(widget);
+		widgetInstanceMap.put("version", 1);
+		widgetInstanceMap.remove("contexts");
+		
+		MvcResult mvcResult = post(mockMvc, "/widgets", widget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap)).andReturn();
+		widget = getObjectFromResult(mvcResult, Widget.class);
+		
+		get(mockMvc, "/widgets").andExpect(status().isOk())
+		.andExpect(jsonPath("$", hasSize(1)));
+		
+		Widget widget2 = new Widget();
+		widget2.setName("fooName");
+		widget2.setScript("otherFooScript");
+		widget2.setContexts(new ArrayList<String>(Arrays.asList("form")));
+		
+		Map<String, Object> widgetInstanceMap2 = objectToMap(widget2);
+		widgetInstanceMap2.put("version", 2);
+		
+		mvcResult = post(mockMvc, "/widgets", widget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap2)).andReturn();
+		widget2 = getObjectFromResult(mvcResult, Widget.class);
+		
+		get(mockMvc, "/widgets").andExpect(status().isOk())
+		.andExpect(jsonPath("$", hasSize(2)));
 	}
 	
 }

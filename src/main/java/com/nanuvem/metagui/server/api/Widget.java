@@ -1,7 +1,6 @@
 package com.nanuvem.metagui.server.api;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,19 +8,27 @@ import javax.persistence.Id;
 
 
 @Entity
-public class Widget {
+public class Widget{
 
 	@GeneratedValue
 	@Id
 	private Long id;
+	private String name;
+	private Long version;
 	private String script;
 	private ArrayList<String> contexts;
 	
-	public Long getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Long getVersion() {
+		return version;
+	}
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 	public String getScript() {
 		return script;
@@ -37,3 +44,4 @@ public class Widget {
 	}
 	
 }
+
