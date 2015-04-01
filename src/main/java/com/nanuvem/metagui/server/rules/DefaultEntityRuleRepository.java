@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.nanuvem.metagui.server.api.DefaultEntityRule;
 
 public interface DefaultEntityRuleRepository extends
-		JpaRepository<DefaultEntityRule, Long> {
+		JpaRepository<DefaultEntityRule, Long>, CommomRuleRepository<DefaultEntityRule> {
 
 }

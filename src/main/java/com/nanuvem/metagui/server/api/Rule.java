@@ -10,6 +10,7 @@ public class Rule {
 	@GeneratedValue
 	@Id
 	private Long id;
+	private Long version;
 	private String context;
 	
 	public Long getId() {
@@ -17,6 +18,12 @@ public class Rule {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Long getVersion() {
+		return version;
+	}
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 	public String getContext() {
 		return context;

@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.nanuvem.metagui.server.api.PropertyRule;
 
 public interface PropertyRuleRepository extends
-		JpaRepository<PropertyRule, Long> {
+		JpaRepository<PropertyRule, Long>, CommomRuleRepository<PropertyRule> {
 
 }
