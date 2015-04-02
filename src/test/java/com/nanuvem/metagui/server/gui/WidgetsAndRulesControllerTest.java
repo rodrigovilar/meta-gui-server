@@ -1,4 +1,4 @@
-package com.nanuvem.metagui.server.rules.tests;
+package com.nanuvem.metagui.server.gui;
 
 import static com.nanuvem.metagui.server.util.TestHelper.get;
 import static com.nanuvem.metagui.server.util.TestHelper.getObjectFromResult;
@@ -31,8 +31,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.nanuvem.metagui.server.MetaGuiEntryPoint;
 import com.nanuvem.metagui.server.api.DefaultEntityRule;
 import com.nanuvem.metagui.server.api.EntityRule;
+import com.nanuvem.metagui.server.api.EntityWidget;
 import com.nanuvem.metagui.server.api.PropertyRule;
 import com.nanuvem.metagui.server.api.PropertyTypeRule;
+import com.nanuvem.metagui.server.api.PropertyWidget;
 import com.nanuvem.metagui.server.api.Widget;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
 import com.nanuvem.metagui.server.rules.RulesContainer;
@@ -43,7 +45,7 @@ import com.nanuvem.metagui.server.widgets.controller.WidgetController;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetaGuiEntryPoint.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RulesControllerTest {
+public class WidgetsAndRulesControllerTest {
 
 	MockMvc mockMvc;
 
@@ -115,7 +117,7 @@ public class RulesControllerTest {
 	
 	@DirtiesContext
 	@Test
-	public void testGetAll() throws Exception {
+	public void testGetAllRules() throws Exception {
 		get(mockMvc, "/rules").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(0)));
 		
@@ -160,7 +162,67 @@ public class RulesControllerTest {
 	
 	@DirtiesContext
 	@Test
-	public void testCRUDWidgets() throws Exception {
+	public void testCreateWidgets() throws Exception {
+		Widget widget = new Widget();
+		widget.setName("fooName");
+		widget.setScript("fooScript");
+		widget.setContexts(new ArrayList<String>(Arrays.asList("form")));
+		
+		Map<String, Object> widgetInstanceMap = objectToMap(widget);
+		widgetInstanceMap.remove("id");
+		widgetInstanceMap.put("version", 1);
+		
+		post(mockMvc, "/widgets", widget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap));
+		
+		Widget widget2 = new Widget();
+		widget2.setName("fooName");
+		widget2.setScript("otherFooScript");
+		widget2.setContexts(new ArrayList<String>(Arrays.asList("form")));
+		
+		Map<String, Object> widgetInstanceMap2 = objectToMap(widget2);
+		widgetInstanceMap2.remove("id");
+		widgetInstanceMap2.put("version", 2);
+		
+		post(mockMvc, "/widgets", widget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap2));
+		
+		Widget widget3 = new Widget();
+		widget3.setName("otherFooName");
+		widget3.setScript("fooScript2");
+		widget3.setContexts(new ArrayList<String>(Arrays.asList("view")));
+		
+		Map<String, Object> widgetInstanceMap3 = objectToMap(widget3);
+		widgetInstanceMap3.remove("id");
+		widgetInstanceMap3.put("version", 1);
+		
+		post(mockMvc, "/widgets", widget3).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap3));
+		
+		EntityWidget entityWidget = new EntityWidget();
+		entityWidget.setName("entityWidget");
+		entityWidget.setScript("entityWidgetScript");
+		entityWidget.setContexts(new ArrayList<String>(Arrays.asList("listing")));
+		
+		Map<String, Object> widgetInstanceMap4 = objectToMap(entityWidget);
+		widgetInstanceMap4.remove("id");
+		widgetInstanceMap4.put("version", 1);
+		
+		post(mockMvc, "/widgets", entityWidget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap4));
+		
+		PropertyWidget propertyWidget = new PropertyWidget();
+		propertyWidget.setName("propertyWidget");
+		propertyWidget.setScript("propertyWidgetScript");
+		propertyWidget.setContexts(new ArrayList<String>(Arrays.asList("listing")));
+		
+		Map<String, Object> widgetInstanceMap5 = objectToMap(propertyWidget);
+		widgetInstanceMap5.remove("id");
+		widgetInstanceMap5.put("version", 1);
+		
+		post(mockMvc, "/widgets", propertyWidget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap5));
+		
+	}
+	
+	@DirtiesContext
+	@Test
+	public void testGetWidgets() throws Exception {
 		get(mockMvc, "/widgets").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(0)));
 		
@@ -170,11 +232,17 @@ public class RulesControllerTest {
 		widget.setContexts(new ArrayList<String>(Arrays.asList("form")));
 		
 		Map<String, Object> widgetInstanceMap = objectToMap(widget);
+		widgetInstanceMap.remove("id");
 		widgetInstanceMap.put("version", 1);
-		widgetInstanceMap.remove("contexts");
 		
 		MvcResult mvcResult = post(mockMvc, "/widgets", widget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap)).andReturn();
 		widget = getObjectFromResult(mvcResult, Widget.class);
+		widgetInstanceMap = objectToMap(widget);
+		widgetInstanceMap.put("id", widget.getId().intValue());
+		widgetInstanceMap.put("version", widget.getVersion().intValue());
+		
+		get(mockMvc, "/widgets/" + widget.getId()).andExpect(status().isOk())
+		.andExpect(instance(widgetInstanceMap));
 		
 		get(mockMvc, "/widgets").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(1)));
@@ -185,13 +253,52 @@ public class RulesControllerTest {
 		widget2.setContexts(new ArrayList<String>(Arrays.asList("form")));
 		
 		Map<String, Object> widgetInstanceMap2 = objectToMap(widget2);
+		widgetInstanceMap2.remove("id");
 		widgetInstanceMap2.put("version", 2);
 		
 		mvcResult = post(mockMvc, "/widgets", widget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap2)).andReturn();
 		widget2 = getObjectFromResult(mvcResult, Widget.class);
+		widgetInstanceMap2 = objectToMap(widget2);
+		widgetInstanceMap2.put("id", widget2.getId().intValue());
+		widgetInstanceMap2.put("version", widget2.getVersion().intValue());
+		
+		get(mockMvc, "/widgets/" + widget2.getId()).andExpect(status().isOk())
+		.andExpect(instance(widgetInstanceMap2));
 		
 		get(mockMvc, "/widgets").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(2)));
+	}
+	
+	@DirtiesContext
+	@Test
+	public void testCreateRulesWithWidgets() throws Exception {
+		
+		EntityWidget entityWidget = new EntityWidget();
+		entityWidget.setName("entityWidget");
+		entityWidget.setScript("entityWidgetScript");
+		entityWidget.setContexts(new ArrayList<String>(Arrays.asList("listing")));
+		
+		Map<String, Object> widgetInstanceMap4 = objectToMap(entityWidget);
+		widgetInstanceMap4.remove("id");
+		widgetInstanceMap4.put("version", 1);
+		
+		MvcResult mvcResult = post(mockMvc, "/widgets", entityWidget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap4)).andReturn();
+		entityWidget = getObjectFromResult(mvcResult, EntityWidget.class);
+		
+		DefaultEntityRule defaultEntityRule = new DefaultEntityRule();
+		defaultEntityRule.setContext("fooContext");
+		EntityWidget widget = new EntityWidget();
+		widget.setId(entityWidget.getId());
+		defaultEntityRule.setWidget(widget);
+		Map<String, Object> instanceMap = objectToMap(defaultEntityRule);
+		instanceMap.remove("id");
+		instanceMap.remove("version");
+		instanceMap.remove("widget");
+		
+		mvcResult = post(mockMvc, "/rules/defaultentityrule", defaultEntityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap)).andReturn();
+		defaultEntityRule = getObjectFromResult(mvcResult, DefaultEntityRule.class);
+		
+		mvcResult = get(mockMvc, "/rules").andExpect(status().isOk()).andReturn();
 	}
 	
 }

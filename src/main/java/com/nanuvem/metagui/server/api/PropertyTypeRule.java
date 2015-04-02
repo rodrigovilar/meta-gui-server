@@ -10,7 +10,7 @@ public class PropertyTypeRule extends Rule {
 
 	private PropertyTypeType propertyTypeType;
 	@ManyToOne
-	private PropertyTypeWidget widget;
+	private PropertyWidget widget;
 
 	public PropertyTypeType getPropertyTypeType() {
 		return propertyTypeType;
@@ -20,11 +20,11 @@ public class PropertyTypeRule extends Rule {
 		this.propertyTypeType = propertyTypeType;
 	}
 
-	public PropertyTypeWidget getWidget() {
+	public PropertyWidget getWidget() {
 		return widget;
 	}
 
-	public void setWidget(PropertyTypeWidget widget) {
+	public void setWidget(PropertyWidget widget) {
 		this.widget = widget;
 	}
 	

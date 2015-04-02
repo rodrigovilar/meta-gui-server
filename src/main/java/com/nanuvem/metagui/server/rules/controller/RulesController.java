@@ -30,7 +30,7 @@ public class RulesController {
 	public void setRulesContainer(RulesContainer rulesContainer) {
 		this.rulesContainer = rulesContainer;
 	}
-
+	
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public <T extends Rule> ResponseEntity<List<T>> getAll(@RequestParam(value="version", defaultValue="0") Long version) {
