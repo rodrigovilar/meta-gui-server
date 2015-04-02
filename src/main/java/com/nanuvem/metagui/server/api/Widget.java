@@ -1,10 +1,12 @@
 package com.nanuvem.metagui.server.api;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -12,7 +14,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(uniqueConstraints=@UniqueConstraint(columnNames={"name", "version"}))
-public class Widget{
+public abstract class Widget{
 
 	@GeneratedValue
 	@Id
@@ -22,8 +24,15 @@ public class Widget{
 	@NotNull
 	private Long version;
 	private String script;
-	private ArrayList<String> contexts;
+	@ManyToMany(fetch = FetchType.EAGER)
+	private List<Context> contexts;
 	
+	public List<Context> getContexts() {
+		return contexts;
+	}
+	public void setContexts(List<Context> contexts) {
+		this.contexts = contexts;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -47,12 +56,6 @@ public class Widget{
 	}
 	public void setScript(String script) {
 		this.script = script;
-	}
-	public ArrayList<String> getContexts() {
-		return contexts;
-	}
-	public void setContexts(ArrayList<String> contexts) {
-		this.contexts = contexts;
 	}
 	
 }

@@ -3,6 +3,7 @@ package com.nanuvem.metagui.server.api;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Rule {
@@ -11,7 +12,8 @@ public class Rule {
 	@Id
 	private Long id;
 	private Long version;
-	private String context;
+	@ManyToOne
+	private Context context;
 	
 	public Long getId() {
 		return id;
@@ -24,12 +26,6 @@ public class Rule {
 	}
 	public void setVersion(Long version) {
 		this.version = version;
-	}
-	public String getContext() {
-		return context;
-	}
-	public void setContext(String context) {
-		this.context = context;
 	}
 	
 }

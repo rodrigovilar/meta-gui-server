@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
+import com.nanuvem.metagui.server.api.EntityWidget;
+import com.nanuvem.metagui.server.api.PropertyWidget;
 import com.nanuvem.metagui.server.api.Widget;
 import com.nanuvem.metagui.server.widgets.WidgetContainer;
 
@@ -33,21 +35,38 @@ public class WidgetController {
 		return new ResponseEntity<List<Widget>>(widgetContainer.getAll(), HttpStatus.OK);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(value = "entity", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Widget> createWidget(@RequestBody String input) {
-		Widget widget = new Gson().fromJson(input, Widget.class);
-		widget = widgetContainer.saveWidget(widget);
-		return new ResponseEntity<Widget>(widget, HttpStatus.CREATED);
+	public ResponseEntity<EntityWidget> createEntityWidget(@RequestBody String input) {
+		EntityWidget widget = new Gson().fromJson(input, EntityWidget.class);
+		widget = widgetContainer.saveEntityWidget(widget);
+		return new ResponseEntity<EntityWidget>(widget, HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(value = "{widgetId}",method = RequestMethod.GET)
+	@RequestMapping(value = "entity/{widgetId}",method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Widget> getWidget(@PathVariable Long widgetId) {
-		Widget widget = widgetContainer.getWidget(widgetId);
+	public ResponseEntity<EntityWidget> getEntityWidget(@PathVariable Long widgetId) {
+		EntityWidget widget = widgetContainer.getEntityWidget(widgetId);
 		if(widget == null)
-			return new ResponseEntity<Widget>(HttpStatus.NOT_FOUND);
-		return new ResponseEntity<Widget>(widget, HttpStatus.OK);
+			return new ResponseEntity<EntityWidget>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<EntityWidget>(widget, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "property", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<PropertyWidget> createPropertyWidget(@RequestBody String input) {
+		PropertyWidget widget = new Gson().fromJson(input, PropertyWidget.class);
+		widget = widgetContainer.savePropertyWidget(widget);
+		return new ResponseEntity<PropertyWidget>(widget, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value = "property/{widgetId}",method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<PropertyWidget> getWidget(@PathVariable Long widgetId) {
+		PropertyWidget widget = widgetContainer.getPropertyWidget(widgetId);
+		if(widget == null)
+			return new ResponseEntity<PropertyWidget>(HttpStatus.NOT_FOUND);
+		return new ResponseEntity<PropertyWidget>(widget, HttpStatus.OK);
 	}
 	
 }
