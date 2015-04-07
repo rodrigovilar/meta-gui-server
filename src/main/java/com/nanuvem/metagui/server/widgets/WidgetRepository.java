@@ -8,6 +8,7 @@ import com.nanuvem.metagui.server.api.Widget;
 
 public interface WidgetRepository extends JpaRepository<Widget, Long>{
 
-	List<Widget> findByName(String name);
+	public List<Widget> findByNameAndVersion(String name, Long version);
+	public List<Widget> findByNameOrderByVersionDesc(String name);
 
 }

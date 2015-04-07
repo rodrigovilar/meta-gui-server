@@ -13,10 +13,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.nanuvem.metagui.server.MetaGuiEntryPoint;
-import com.nanuvem.metagui.server.api.Context;
 import com.nanuvem.metagui.server.api.Rule;
+import com.nanuvem.metagui.server.api.Widget;
 import com.nanuvem.metagui.server.api.WidgetType;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
 import com.nanuvem.metagui.server.rules.RulesContainer;
@@ -39,7 +37,6 @@ import com.nanuvem.metagui.server.widgets.controller.WidgetController;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetaGuiEntryPoint.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class WidgetsAndRulesControllerTest {
 
 	MockMvc mockMvc;
@@ -69,65 +66,151 @@ public class WidgetsAndRulesControllerTest {
 	
 	@DirtiesContext
 	@Test
+	public void testCreateWidgets() throws Exception {
+		Widget widget = TestCreatorHelper.createSimpleWidget("fooName", "fooCode", WidgetType.Property);
+		
+		Map<String, Object> widgetInstanceMap = objectToMap(widget);
+		widgetInstanceMap.remove("id");
+		widgetInstanceMap.put("version", 1);
+		widgetInstanceMap.put("type", widget.getType().name());
+		
+		post(mockMvc, "/widgets", widget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap));
+		
+		Widget widget2 = TestCreatorHelper.createSimpleWidget("fooName", "otherFooCode", WidgetType.Property);
+		
+		Map<String, Object> widgetInstanceMap2 = objectToMap(widget2);
+		widgetInstanceMap2.remove("id");
+		widgetInstanceMap2.put("version", 2);
+		widgetInstanceMap2.put("type", widget2.getType().name());
+		
+		post(mockMvc, "/widgets", widget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap2));
+		
+		Widget widget3 = TestCreatorHelper.createSimpleWidget("otherFooName", "fooCode2", WidgetType.Property);
+		
+		Map<String, Object> widgetInstanceMap3 = objectToMap(widget3);
+		widgetInstanceMap3.remove("id");
+		widgetInstanceMap3.put("version", 1);
+		widgetInstanceMap3.put("type", widget3.getType().name());
+		
+		post(mockMvc, "/widgets", widget3).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap3));
+		
+		Widget entityWidget = TestCreatorHelper.createSimpleWidget("entityWidget", "entityWidgetCode", WidgetType.Entity);
+		
+		Map<String, Object> widgetInstanceMap4 = objectToMap(entityWidget);
+		widgetInstanceMap4.remove("id");
+		widgetInstanceMap4.put("version", 1);
+		widgetInstanceMap4.put("type", entityWidget.getType().name());
+		
+		post(mockMvc, "/widgets", entityWidget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap4));
+		
+		Widget entityWidget2 = TestCreatorHelper.createSimpleWidget("entityWidget", "any Code", WidgetType.Entity);
+		
+		Map<String, Object> widgetInstanceMap5 = objectToMap(entityWidget2);
+		widgetInstanceMap5.remove("id");
+		widgetInstanceMap5.put("version", 2);
+		widgetInstanceMap5.put("type", entityWidget2.getType().name());
+		
+		post(mockMvc, "/widgets", entityWidget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap5));
+		
+		Widget widgetWithContexts = TestCreatorHelper.createSimpleWidget("entityWidget", "any Code", WidgetType.Entity, "form", "report");
+		
+		Map<String, Object> widgetInstanceMap6 = objectToMap(widgetWithContexts);
+		widgetInstanceMap6.remove("id");
+		widgetInstanceMap6.remove("requiredContexts");
+		widgetInstanceMap6.put("version", 3);
+		widgetInstanceMap6.put("type", widgetWithContexts.getType().name());
+		
+		post(mockMvc, "/widgets", widgetWithContexts).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap6));
+		
+	}
+	
+	@DirtiesContext
+	@Test
+	public void testGetWidgets() throws Exception {
+		get(mockMvc, "/widgets").andExpect(status().isOk())
+		.andExpect(jsonPath("$", hasSize(0)));
+		
+		Widget widget = TestCreatorHelper.createSimpleWidget("entityWidget", "entityWidgetCode", WidgetType.Entity);
+		post(mockMvc, "/widgets", widget).andExpect(status().isCreated());
+		get(mockMvc, "/widgets").andExpect(status().isOk())
+		.andExpect(jsonPath("$", hasSize(1)));
+		
+		Widget widget2 = TestCreatorHelper.createSimpleWidget("fooName", "fooCode", WidgetType.Property);
+		post(mockMvc, "/widgets", widget2).andExpect(status().isCreated());
+		get(mockMvc, "/widgets").andExpect(status().isOk())
+		.andExpect(jsonPath("$", hasSize(2)));
+	}
+
+	@DirtiesContext
+	@Test
 	public void testCreateRules() throws Exception {
-		Rule defaultEntityRule = TestCreatorHelper.createEntityRule("fooDefaultEntityContext", "*");
+		Widget entityWidget = TestCreatorHelper.createSimpleWidget("entityWidget", "entityWidgetCode", WidgetType.Entity);
+		post(mockMvc, "/widgets", entityWidget).andExpect(status().isCreated());
+		Rule defaultEntityRule = TestCreatorHelper.createEntityRule("fooEntityContext", "*", entityWidget.getName());
 		Map<String, Object> instanceMap = objectToMap(defaultEntityRule);
 		instanceMap.remove("id");
 		instanceMap.remove("version");
 		instanceMap.remove("providedContext");
+		instanceMap.remove("widget");
 		
 		post(mockMvc, "/rules", defaultEntityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
-		Rule propertyTypeRule = TestCreatorHelper.createPropertyRule("fooPropertyTypeContext", PropertyTypeType.string, "*");
+		Widget propertyWidget = TestCreatorHelper.createSimpleWidget("fooName", "fooCode", WidgetType.Property);
+		post(mockMvc, "/widgets", propertyWidget).andExpect(status().isCreated());
+		Rule propertyTypeRule = TestCreatorHelper.createPropertyRule("fooPropertyTypeContext", PropertyTypeType.string, "*", propertyWidget.getName());
 		instanceMap = objectToMap(propertyTypeRule);
 		instanceMap.remove("id");
 		instanceMap.remove("version");
 		instanceMap.remove("providedContext");
+		instanceMap.remove("widget");
 		instanceMap.put("propertyTypeTypeLocator", propertyTypeRule.getPropertyTypeTypeLocator().name());
 		
 		post(mockMvc, "/rules", propertyTypeRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
-		Rule propertyRule = TestCreatorHelper.createPropertyRule("fooPropertyContext", PropertyTypeType.string, "*.name");
+		Rule propertyRule = TestCreatorHelper.createPropertyRule("fooPropertyContext", PropertyTypeType.string, "*.name", propertyWidget.getName());
 		instanceMap = objectToMap(propertyRule);
 		instanceMap.remove("id");
 		instanceMap.remove("version");
 		instanceMap.remove("providedContext");
+		instanceMap.remove("widget");
 		instanceMap.put("propertyTypeTypeLocator", propertyTypeRule.getPropertyTypeTypeLocator().name());
 		
 		post(mockMvc, "/rules", propertyRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
-		Rule entityRule = TestCreatorHelper.createEntityRule("fooEntityContext", "*Item");
+		Rule entityRule = TestCreatorHelper.createEntityRule("fooEntityContext", "*Item", entityWidget.getName());
 		instanceMap = objectToMap(entityRule);
 		instanceMap.remove("id");
 		instanceMap.remove("version");
 		instanceMap.remove("providedContext");
+		instanceMap.remove("widget");
 		
 		post(mockMvc, "/rules", entityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
-		//TODO Fazer teste para usar o mesmo contexto
-		
 	}
 
-/*	
+	
 	@DirtiesContext
 	@Test
 	public void testGetAllRules() throws Exception {
 		get(mockMvc, "/rules").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(0)));
 		
-		DefaultEntityRule defaultEntityRule = new DefaultEntityRule();
+		Widget entityWidget = TestCreatorHelper.createSimpleWidget("entityWidget", "entityWidgetCode", WidgetType.Entity);
+		post(mockMvc, "/widgets", entityWidget).andExpect(status().isCreated());
+		Rule defaultEntityRule = TestCreatorHelper.createEntityRule("fooEntityContext", "*", entityWidget.getName());
 		
-		MvcResult mvcResult = post(mockMvc, "/rules/defaultentityrule", defaultEntityRule).andExpect(status().isCreated()).andReturn();
-		defaultEntityRule = getObjectFromResult(mvcResult, DefaultEntityRule.class);
+		MvcResult mvcResult = post(mockMvc, "/rules", defaultEntityRule).andExpect(status().isCreated()).andReturn();
+		defaultEntityRule = getObjectFromResult(mvcResult, Rule.class);
 		
 		get(mockMvc, "/rules").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(1)));
 		
-		PropertyTypeRule propertyTypeRule = new PropertyTypeRule();
-		propertyTypeRule.setPropertyTypeType(PropertyTypeType.string);
+		Widget propertyWidget = TestCreatorHelper.createSimpleWidget("fooName", "fooCode", WidgetType.Property);
+		post(mockMvc, "/widgets", propertyWidget).andExpect(status().isCreated());
+		Rule propertyTypeRule = TestCreatorHelper.createPropertyRule("fooPropertyTypeContext", PropertyTypeType.string, "*", propertyWidget.getName());
 		
-		MvcResult mvcResult2 = post(mockMvc, "/rules/propertytyperule", propertyTypeRule).andExpect(status().isCreated()).andReturn();
-		propertyTypeRule = getObjectFromResult(mvcResult2, PropertyTypeRule.class);
+		MvcResult mvcResult2 = post(mockMvc, "/rules", propertyTypeRule).andExpect(status().isCreated()).andReturn();
+		propertyTypeRule = getObjectFromResult(mvcResult2, Rule.class);
 		
 		get(mockMvc, "/rules").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(2)));
@@ -135,10 +218,10 @@ public class WidgetsAndRulesControllerTest {
 		get(mockMvc, "/rules?version=" + defaultEntityRule.getVersion()).andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(1)));
 		
-		DefaultEntityRule defaultEntityRule2 = new DefaultEntityRule();
+		Rule defaultEntityRule2 = TestCreatorHelper.createEntityRule("fooEntityContext", "*", entityWidget.getName());
 		
-		MvcResult mvcResult3 = post(mockMvc, "/rules/defaultentityrule", defaultEntityRule2).andExpect(status().isCreated()).andReturn();
-		defaultEntityRule2 = getObjectFromResult(mvcResult3, DefaultEntityRule.class);
+		MvcResult mvcResult3 = post(mockMvc, "/rules", defaultEntityRule2).andExpect(status().isCreated()).andReturn();
+		defaultEntityRule2 = getObjectFromResult(mvcResult3, Rule.class);
 		
 		get(mockMvc, "/rules").andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(3)));
@@ -150,136 +233,5 @@ public class WidgetsAndRulesControllerTest {
 		.andExpect(jsonPath("$", hasSize(1)));
 		
 	}
-	
-	@DirtiesContext
-	@Test
-	public void testCreateWidgets() throws Exception {
-		PropertyWidget widget = new PropertyWidget();
-		widget.setName("fooName");
-		widget.setScript("fooScript");
-		
-		Map<String, Object> widgetInstanceMap = objectToMap(widget);
-		widgetInstanceMap.remove("id");
-		widgetInstanceMap.put("version", 1);
-		
-		post(mockMvc, "/widgets/property", widget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap));
-		
-		PropertyWidget widget2 = new PropertyWidget();
-		widget2.setName("fooName");
-		widget2.setScript("otherFooScript");
-		
-		Map<String, Object> widgetInstanceMap2 = objectToMap(widget2);
-		widgetInstanceMap2.remove("id");
-		widgetInstanceMap2.put("version", 2);
-		
-		post(mockMvc, "/widgets/property", widget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap2));
-		
-		PropertyWidget widget3 = new PropertyWidget();
-		widget3.setName("otherFooName");
-		widget3.setScript("fooScript2");
-		
-		Map<String, Object> widgetInstanceMap3 = objectToMap(widget3);
-		widgetInstanceMap3.remove("id");
-		widgetInstanceMap3.put("version", 1);
-		
-		post(mockMvc, "/widgets/property", widget3).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap3));
-		
-		EntityWidget entityWidget = new EntityWidget();
-		entityWidget.setName("entityWidget");
-		entityWidget.setScript("entityWidgetScript");
-		
-		Map<String, Object> widgetInstanceMap4 = objectToMap(entityWidget);
-		widgetInstanceMap4.remove("id");
-		widgetInstanceMap4.put("version", 1);
-		
-		post(mockMvc, "/widgets/entity", entityWidget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap4));
-		
-		EntityWidget entityWidget2 = new EntityWidget();
-		entityWidget2.setName("entityWidget");
-		entityWidget2.setScript("any Script");
-		
-		Map<String, Object> widgetInstanceMap5 = objectToMap(entityWidget2);
-		widgetInstanceMap5.remove("id");
-		widgetInstanceMap5.put("version", 2);
-		
-		post(mockMvc, "/widgets/entity", entityWidget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap5));
-		
-	}
-	
-	@DirtiesContext
-	@Test
-	public void testGetWidgets() throws Exception {
-		get(mockMvc, "/widgets").andExpect(status().isOk())
-		.andExpect(jsonPath("$", hasSize(0)));
-		
-		EntityWidget widget = new EntityWidget();
-		widget.setName("entityWidget");
-		widget.setScript("fooScript");
-		
-		Map<String, Object> widgetInstanceMap = objectToMap(widget);
-		widgetInstanceMap.remove("id");
-		widgetInstanceMap.put("version", 1);
-		
-		MvcResult mvcResult = post(mockMvc, "/widgets/entity", widget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap)).andReturn();
-		widget = getObjectFromResult(mvcResult, EntityWidget.class);
-		widgetInstanceMap = objectToMap(widget);
-		widgetInstanceMap.put("id", widget.getId().intValue());
-		widgetInstanceMap.put("version", widget.getVersion().intValue());
-		
-		get(mockMvc, "/widgets/entity/" + widget.getId()).andExpect(status().isOk())
-		.andExpect(instance(widgetInstanceMap));
-		
-		get(mockMvc, "/widgets").andExpect(status().isOk())
-		.andExpect(jsonPath("$", hasSize(1)));
-		
-		PropertyWidget widget2 = new PropertyWidget();
-		widget2.setName("propertyWidget");
-		widget2.setScript("otherFooScript");
-		
-		Map<String, Object> widgetInstanceMap2 = objectToMap(widget2);
-		widgetInstanceMap2.remove("id");
-		widgetInstanceMap2.put("version", 1);
-		
-		mvcResult = post(mockMvc, "/widgets/property", widget2).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap2)).andReturn();
-		widget2 = getObjectFromResult(mvcResult, PropertyWidget.class);
-		widgetInstanceMap2 = objectToMap(widget2);
-		widgetInstanceMap2.put("id", widget2.getId().intValue());
-		widgetInstanceMap2.put("version", widget2.getVersion().intValue());
-		
-		get(mockMvc, "/widgets/property/" + widget2.getId()).andExpect(status().isOk())
-		.andExpect(instance(widgetInstanceMap2));
-		
-		get(mockMvc, "/widgets").andExpect(status().isOk())
-		.andExpect(jsonPath("$", hasSize(2)));
-	}
-	
-	@DirtiesContext
-	@Test
-	public void testCreateRulesWithWidgets() throws Exception {
-		
-		EntityWidget entityWidget = new EntityWidget();
-		entityWidget.setName("entityWidget");
-		entityWidget.setScript("entityWidgetScript");
-		
-		Map<String, Object> widgetInstanceMap4 = objectToMap(entityWidget);
-		widgetInstanceMap4.remove("id");
-		widgetInstanceMap4.put("version", 1);
-		
-		MvcResult mvcResult = post(mockMvc, "/widgets/entity", entityWidget).andExpect(status().isCreated()).andExpect(instance(widgetInstanceMap4)).andReturn();
-		entityWidget = getObjectFromResult(mvcResult, EntityWidget.class);
-		
-		DefaultEntityRule defaultEntityRule = new DefaultEntityRule();
-		EntityWidget widget = new EntityWidget();
-		widget.setId(entityWidget.getId());
-		defaultEntityRule.setWidget(widget);
-		Map<String, Object> instanceMap = objectToMap(defaultEntityRule);
-		instanceMap.remove("id");
-		instanceMap.remove("version");
-		instanceMap.remove("widget");
-		
-		mvcResult = post(mockMvc, "/rules/defaultentityrule", defaultEntityRule).andExpect(status().isCreated()).andExpect(instance(instanceMap)).andReturn();
-		defaultEntityRule = getObjectFromResult(mvcResult, DefaultEntityRule.class);
-		
-	}
-*/
+
 }

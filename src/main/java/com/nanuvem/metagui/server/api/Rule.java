@@ -1,10 +1,11 @@
 package com.nanuvem.metagui.server.api;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
 
@@ -15,8 +16,12 @@ public class Rule {
 	@Id
 	private Long id;
 	private Long version;
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@NotNull
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Context providedContext;
+	@NotNull
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Widget widget;
 	private String entityTypeLocator;
 	private String propertyTypeLocator;
 	private PropertyTypeType propertyTypeTypeLocator;
@@ -56,5 +61,11 @@ public class Rule {
 	}
 	public void setPropertyTypeTypeLocator(PropertyTypeType propertyTypeTypeLocator) {
 		this.propertyTypeTypeLocator = propertyTypeTypeLocator;
+	}
+	public Widget getWidget() {
+		return widget;
+	}
+	public void setWidget(Widget widget) {
+		this.widget = widget;
 	}
 }

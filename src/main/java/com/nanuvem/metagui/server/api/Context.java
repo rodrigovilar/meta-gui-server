@@ -2,28 +2,30 @@ package com.nanuvem.metagui.server.api;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(uniqueConstraints=@UniqueConstraint(columnNames={"name", "type"}))
 public class Context {
 
 	@Id
 	@GeneratedValue
 	private Long id;
-	@NotNull
+	@Column(nullable = false, unique = true)
 	private String name;
 	@NotNull
 	private WidgetType type;
+	@JsonIgnore
 	@ManyToMany(mappedBy = "requiredContexts")
 	private List<Widget> widgets;
+	@JsonIgnore
 	@OneToMany(mappedBy = "providedContext")
 	private List<Rule> rules;
 	
