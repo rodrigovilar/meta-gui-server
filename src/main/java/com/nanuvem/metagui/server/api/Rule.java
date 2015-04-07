@@ -1,9 +1,12 @@
 package com.nanuvem.metagui.server.api;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import com.nanuvem.metagui.server.controller.PropertyTypeType;
 
 @Entity
 public class Rule {
@@ -12,8 +15,11 @@ public class Rule {
 	@Id
 	private Long id;
 	private Long version;
-	@ManyToOne
-	private Context context;
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	private Context providedContext;
+	private String entityTypeLocator;
+	private String propertyTypeLocator;
+	private PropertyTypeType propertyTypeTypeLocator;
 	
 	public Long getId() {
 		return id;
@@ -27,5 +33,28 @@ public class Rule {
 	public void setVersion(Long version) {
 		this.version = version;
 	}
-	
+	public Context getProvidedContext() {
+		return providedContext;
+	}
+	public void setProvidedContext(Context context) {
+		this.providedContext = context;
+	}
+	public String getEntityTypeLocator() {
+		return entityTypeLocator;
+	}
+	public void setEntityTypeLocator(String entityTypeLocator) {
+		this.entityTypeLocator = entityTypeLocator;
+	}
+	public String getPropertyTypeLocator() {
+		return propertyTypeLocator;
+	}
+	public void setPropertyTypeLocator(String propertyTypeLocator) {
+		this.propertyTypeLocator = propertyTypeLocator;
+	}
+	public PropertyTypeType getPropertyTypeTypeLocator() {
+		return propertyTypeTypeLocator;
+	}
+	public void setPropertyTypeTypeLocator(PropertyTypeType propertyTypeTypeLocator) {
+		this.propertyTypeTypeLocator = propertyTypeTypeLocator;
+	}
 }

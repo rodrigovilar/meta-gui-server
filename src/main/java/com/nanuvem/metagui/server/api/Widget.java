@@ -3,7 +3,6 @@ package com.nanuvem.metagui.server.api;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -14,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(uniqueConstraints=@UniqueConstraint(columnNames={"name", "version"}))
-public abstract class Widget{
+public class Widget{
 
 	@GeneratedValue
 	@Id
@@ -23,16 +22,13 @@ public abstract class Widget{
 	private String name;
 	@NotNull
 	private Long version;
-	private String script;
-	@ManyToMany(fetch = FetchType.EAGER)
-	private List<Context> contexts;
+	private String code;
+	@NotNull
+	private WidgetType type;
+	private String configuration;
+	@ManyToMany
+	private List<Context> requiredContexts;
 	
-	public List<Context> getContexts() {
-		return contexts;
-	}
-	public void setContexts(List<Context> contexts) {
-		this.contexts = contexts;
-	}
 	public Long getId() {
 		return id;
 	}
@@ -51,12 +47,30 @@ public abstract class Widget{
 	public void setVersion(Long version) {
 		this.version = version;
 	}
-	public String getScript() {
-		return script;
+	public String getCode() {
+		return code;
 	}
-	public void setScript(String script) {
-		this.script = script;
+	public void setCode(String code) {
+		this.code = code;
 	}
-	
+	public WidgetType getType() {
+		return type;
+	}
+	public void setType(WidgetType type) {
+		this.type = type;
+	}
+	public String getConfiguration() {
+		return configuration;
+	}
+	public void setConfiguration(String configuration) {
+		this.configuration = configuration;
+	}
+	public List<Context> getRequiredContexts() {
+		return requiredContexts;
+	}
+	public void setRequiredContexts(List<Context> requiredContexts) {
+		this.requiredContexts = requiredContexts;
+	}
+		
 }
 
