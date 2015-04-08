@@ -140,6 +140,21 @@ public class TestHelper {
 	    return result;
 	}
 	
+	public static void fixWidgetInstanceMap(Map<String, Object> widgetInstanceMap,
+			int version, String typeName) {
+		widgetInstanceMap.remove("id");
+		widgetInstanceMap.remove("requiredContexts");
+		widgetInstanceMap.put("version", version);
+		widgetInstanceMap.put("type", typeName);
+	}
+	
+	public static void fixRuleInstanceMap(Map<String, Object> ruleInstanceMap) {
+		ruleInstanceMap.remove("id");
+		ruleInstanceMap.remove("version");
+		ruleInstanceMap.remove("providedContext");
+		ruleInstanceMap.remove("widget");
+	}
+	
 	public static Date getDate(int year, int month, int day, int hour, int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(0);

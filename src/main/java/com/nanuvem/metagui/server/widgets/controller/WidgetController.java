@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.nanuvem.metagui.server.api.Widget;
-import com.nanuvem.metagui.server.widgets.WidgetContainer;
+import com.nanuvem.metagui.server.widgets.WidgetService;
 
 @Controller
 @RequestMapping(value = "/widgets")
 public class WidgetController {
 
 	@Autowired
-	private WidgetContainer widgetContainer;
+	private WidgetService widgetContainer;
 	
-	public void setWidgetContainer(WidgetContainer widgetContainer) {
+	public void setWidgetContainer(WidgetService widgetContainer) {
 		this.widgetContainer = widgetContainer;
 	}
 	
@@ -35,7 +35,7 @@ public class WidgetController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Widget> createEntityWidget(@RequestBody String input) {
+	public ResponseEntity<Widget> createWidget(@RequestBody String input) {
 		Widget widget = new Gson().fromJson(input, Widget.class);
 		widget = widgetContainer.saveWidget(widget);
 		return new ResponseEntity<Widget>(widget, HttpStatus.CREATED);
@@ -43,7 +43,7 @@ public class WidgetController {
 	
 	@RequestMapping(value = "{widgetId}",method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Widget> getEntityWidget(@PathVariable Long widgetId) {
+	public ResponseEntity<Widget> getWidget(@PathVariable Long widgetId) {
 		Widget widget = widgetContainer.getWidget(widgetId);
 		if(widget == null)
 			return new ResponseEntity<Widget>(HttpStatus.NOT_FOUND);

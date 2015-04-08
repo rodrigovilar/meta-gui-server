@@ -6,13 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -30,11 +27,8 @@ public class Widget{
 	@NotNull
 	private WidgetType type;
 	private String configuration;
-	@ManyToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Context> requiredContexts;
-	@JsonIgnore
-	@OneToMany(mappedBy = "widget")
-	private List<Rule> rules;
 	
 	public Long getId() {
 		return id;
@@ -77,12 +71,6 @@ public class Widget{
 	}
 	public void setRequiredContexts(List<Context> requiredContexts) {
 		this.requiredContexts = requiredContexts;
-	}
-	public List<Rule> getRules() {
-		return rules;
-	}
-	public void setRules(List<Rule> rules) {
-		this.rules = rules;
 	}
 		
 }

@@ -3,21 +3,19 @@ package com.nanuvem.metagui.server.widgets;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.nanuvem.metagui.server.api.Context;
 import com.nanuvem.metagui.server.api.Widget;
-import com.nanuvem.metagui.server.context.ContextContainer;
+import com.nanuvem.metagui.server.context.ContextService;
 
 @Service
-@Component
-public class WidgetContainer {
+public class WidgetService {
 
 	@Autowired
 	private WidgetRepository widgetRepository;
 	@Autowired
-	private ContextContainer contextContainer;
+	private ContextService contextContainer;
 	
 	public List<Widget> getAll() {
 		return widgetRepository.findAll();
@@ -47,7 +45,7 @@ public class WidgetContainer {
 		}
 		if(widget.getRequiredContexts() != null) {
 			for(Context context : widget.getRequiredContexts()) {
-				context.setId(contextContainer.getOrCreateContext(context).getId());
+				context.setId(contextContainer.createContext(context).getId());
 			}
 		}
 		return widgetRepository.saveAndFlush(widget);

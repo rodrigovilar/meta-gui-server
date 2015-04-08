@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.nanuvem.metagui.server.api.Rule;
-import com.nanuvem.metagui.server.rules.RulesContainer;
+import com.nanuvem.metagui.server.rules.RuleService;
 
 @Controller
 @RequestMapping(value = "/rules")
 public class RulesController {
 
 	@Autowired
-	private RulesContainer rulesContainer;
+	private RuleService rulesContainer;
 	
-	public void setRulesContainer(RulesContainer rulesContainer) {
+	public void setRulesContainer(RuleService rulesContainer) {
 		this.rulesContainer = rulesContainer;
 	}
 	

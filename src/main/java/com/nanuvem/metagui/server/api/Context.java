@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
@@ -23,8 +23,8 @@ public class Context {
 	@NotNull
 	private WidgetType type;
 	@JsonIgnore
-	@ManyToMany(mappedBy = "requiredContexts")
-	private List<Widget> widgets;
+	@ManyToOne
+	private Widget widget;
 	@JsonIgnore
 	@OneToMany(mappedBy = "providedContext")
 	private List<Rule> rules;
@@ -47,17 +47,17 @@ public class Context {
 	public void setType(WidgetType type) {
 		this.type = type;
 	}
-	public List<Widget> getWidgets() {
-		return widgets;
-	}
-	public void setWidgets(List<Widget> widgets) {
-		this.widgets = widgets;
-	}
 	public List<Rule> getRules() {
 		return rules;
 	}
 	public void setRules(List<Rule> rules) {
 		this.rules = rules;
+	}
+	public Widget getWidget() {
+		return widget;
+	}
+	public void setWidget(Widget widget) {
+		this.widget = widget;
 	}
 	
 }
