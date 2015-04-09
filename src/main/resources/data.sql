@@ -1,0 +1,1 @@
+INSERT INTO Widget (name, version, code, type) VALUES ('CrudComponent', 1, 'test', 0);
