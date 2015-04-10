@@ -2,6 +2,7 @@ package com.nanuvem.metagui.server.api;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ public class Widget{
 	private String name;
 	@NotNull
 	private Long version;
+	@Column(length=1000000)
 	private String code;
 	@NotNull
 	private WidgetType type;
