@@ -12,29 +12,66 @@
     }
 
     ListingTable.prototype.render = function(view, entityType, entites, conf) {
-      var table, th,
-        _this = this;
+      return this.drawTable(entityType, entites, view);
+    };
+
+    ListingTable.prototype.drawTable = function(entityType, entites, view) {
+      var table;
+      this.page = view;
       table = $("<table>");
-      view.append(table);
-      th = $("<tr><th>Entities</th></tr>");
-      th.attr("id", "entities");
-      table.append(th);
-      return entities.forEach(function(entity) {
-        return _this.drawLine(table, entity);
+      this.page.append(table);
+      this.buildTableHead(entityType.properties, table);
+      return this.buildTableBody(entityType.properties, entites, table);
+    };
+
+    ListingTable.prototype.buildTableHead = function(properties, table) {
+      var thead, trHead;
+      thead = $("<thead>");
+      table.append(thead);
+      trHead = $("<tr>");
+      trHead.attr("id", "properties");
+      thead.append(trHead);
+      return properties.forEach(function(property) {
+        var thHead;
+        thHead = $("<th>" + property.name + "</th>");
+        return trHead.append(thHead);
       });
     };
 
-    ListingTable.prototype.drawLine = function(table, entity) {
-      var tr;
-      tr = $("<tr><td>" + entity.name + "</td></tr>");
-      tr.attr("id", "entity_" + entity.name);
-      return table.append(tr);
+    ListingTable.prototype.buildTableBody = function(properties, entites, table) {
+      var tbody,
+        _this = this;
+      if (entites.length > 0) {
+        tbody = $("<tbody>");
+        tbody.attr("id", "instances");
+        table.append(tbody);
+        return entites.forEach(function(entity) {
+          return _this.buildTableLine(entity, properties, tbody);
+        });
+      } else {
+        return table.append("There are not instances");
+      }
+    };
+
+    ListingTable.prototype.buildTableLine = function(entity, properties, tbody) {
+      var trbody,
+        _this = this;
+      trbody = $("<tr>");
+      trbody.attr("id", "instance_" + instance.id);
+      tbody.append(trbody);
+      return properties.forEach(function(property) {
+        var td;
+        td = $("<td>");
+        td.attr("id", "entity_" + entity.id + "_property_" + property.name);
+        td.append(entity[property.name]);
+        return trbody.append(td);
+      });
     };
 
     return ListingTable;
 
   })(EntitySetWidget);
 
-  return new TableRootRenderer;
+  return new ListingTable;
 
 }).call(this);

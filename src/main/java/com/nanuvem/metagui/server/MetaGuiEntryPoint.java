@@ -16,10 +16,10 @@ import com.nanuvem.metagui.server.api.Widget;
 import com.nanuvem.metagui.server.api.WidgetType;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.context.ContextService;
+import com.nanuvem.metagui.server.controller.PropertyTypeType;
 import com.nanuvem.metagui.server.rules.RuleService;
 import com.nanuvem.metagui.server.widgets.WidgetService;
 
-ce;
 @SpringBootApplication
 public class MetaGuiEntryPoint {
 
@@ -48,8 +48,8 @@ public class MetaGuiEntryPoint {
 	
 	private static Context createContext(String name, WidgetType type, ContextService contextService) {
 		Context context = new Context();
-		context.setName("root");
-		context.setType(WidgetType.EntitySet);
+		context.setName(name);
+		context.setType(type);
 		return contextService.createContext(context);
 	}
 	
@@ -63,10 +63,12 @@ public class MetaGuiEntryPoint {
 		return widgetService.saveWidget(widget);
 	}
 	
-	private static Rule createRule(Context providedContext, String entityTypeLocator, String propertyTypeTypeLocator, String propertyTypeLocator, Widget widget, RuleService ruleService) {
+	private static Rule createRule(Context providedContext, String entityTypeLocator, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, Widget widget, RuleService ruleService) {
 		Rule rule = new Rule();
 		rule.setProvidedContext(providedContext);
-		rule.setEntityTypeLocator("*");
+		rule.setEntityTypeLocator(entityTypeLocator);
+		rule.setPropertyTypeTypeLocator(propertyTypeTypeLocator);
+		rule.setPropertyTypeLocator(propertyTypeLocator);
 		rule.setWidget(widget);
 		return ruleService.saveRule(rule);
 	}
