@@ -17,9 +17,8 @@
 
     ListingTable.prototype.drawTable = function(entityType, entites, view) {
       var table;
-      this.page = view;
       table = $("<table>");
-      this.page.append(table);
+      view.append(table);
       this.buildTableHead(entityType.properties, table);
       return this.buildTableBody(entityType.properties, entites, table);
     };

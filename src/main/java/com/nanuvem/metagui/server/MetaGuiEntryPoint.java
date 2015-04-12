@@ -27,12 +27,12 @@ public class MetaGuiEntryPoint {
 	public static ConfigurableApplicationContext run(String[] args) {
 		ConfigurableApplicationContext application = SpringApplication.run(MetaGuiEntryPoint.class, args);
 		DomainModelContainer.setApplicationContext(application);
+		initDB(application);
 		return application;
 	}
 	
 	public static void main(String[] args) {
-		ConfigurableApplicationContext configurableApplicationContext = run(args);
-		initDB(configurableApplicationContext);
+		run(args);
 	}
 	
 	public static void initDB(ConfigurableApplicationContext application) {
