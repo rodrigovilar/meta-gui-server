@@ -11,16 +11,19 @@
       return ListingTable.__super__.constructor.apply(this, arguments);
     }
 
-    ListingTable.prototype.render = function(view, entityType, entites, conf) {
+    ListingTable.prototype.render = function(view, entityType, entites, configuration) {
       return this.drawTable(entityType, entites, view);
     };
 
     ListingTable.prototype.drawTable = function(entityType, entites, view) {
-      var table;
+      var table, title;
+      title = $("<h2>");
+      title.append(entityType.name);
+      view.append(title);
       table = $("<table>");
       view.append(table);
       this.buildTableHead(entityType.properties, table);
-      return this.buildTableBody(entityType.properties, entites, table);
+      return this.buildTableBody(entityType, entites, table);
     };
 
     ListingTable.prototype.buildTableHead = function(properties, table) {
@@ -37,7 +40,7 @@
       });
     };
 
-    ListingTable.prototype.buildTableBody = function(properties, entites, table) {
+    ListingTable.prototype.buildTableBody = function(entityType, entites, table) {
       var tbody,
         _this = this;
       if (entites.length > 0) {
@@ -45,26 +48,39 @@
         tbody.attr("id", "instances");
         table.append(tbody);
         return entites.forEach(function(entity) {
-          return _this.buildTableLine(entity, properties, tbody);
+          return _this.buildTableLine(entity, entityType, tbody);
         });
       } else {
         return table.append("There are not instances");
       }
     };
 
-    ListingTable.prototype.buildTableLine = function(entity, properties, tbody) {
-      var trbody,
+    ListingTable.prototype.buildTableLine = function(entity, entityType, tbody) {
+      var deleteButton, td, trbody,
         _this = this;
       trbody = $("<tr>");
-      trbody.attr("id", "instance_" + instance.id);
+      trbody.attr("id", "instance_" + entity.id);
       tbody.append(trbody);
-      return properties.forEach(function(property) {
+      entityType.properties.forEach(function(property) {
         var td;
         td = $("<td>");
         td.attr("id", "entity_" + entity.id + "_property_" + property.name);
         td.append(entity[property.name]);
         return trbody.append(td);
       });
+      deleteButton = $("<button>");
+      deleteButton.append("Delete");
+      deleteButton.on("click", function() {
+        var _this = this;
+        return DataManager.deleteEntity(entityType.resource, entity.id, function(data) {
+          return RederingEngine.peformContext(View.emptyPage(), entityType, 'root');
+        }, function(status) {
+          return alert("Ocorreu algum erro " + status);
+        });
+      });
+      td = $("<td>");
+      td.append(deleteButton);
+      return trbody.append(td);
     };
 
     return ListingTable;

@@ -10,6 +10,7 @@ public class EntityTypeRest {
 
 	private long id;
 	private String name;
+	private String resource;
 	private List<PropertyTypeRest> properties = new ArrayList<PropertyTypeRest>();
 
 	public long getId() {
@@ -79,6 +80,7 @@ public class EntityTypeRest {
 		EntityTypeRest entityTypeRest = new EntityTypeRest();
 		entityTypeRest.setName(domain.getName());
 		entityTypeRest.setId(domain.getId());
+		entityTypeRest.setResource(domain.getResource());
 
 		if (withProperties) {
 			//Get EntityType Properties
@@ -95,6 +97,14 @@ public class EntityTypeRest {
 		}
 
 		return entityTypeRest;
+	}
+
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
 	}
 
 }

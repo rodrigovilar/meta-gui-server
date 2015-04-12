@@ -1,6 +1,7 @@
 package com.nanuvem.metagui.server;
 
-import java.io.IOException;
+import java.io.File;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -75,11 +76,12 @@ public class MetaGuiEntryPoint {
 	
 	public static String readWidgetFile(String fileName) {
 		String filePath = MetaGuiEntryPoint.class.getResource("/widgets/" + fileName).getPath();
-		filePath = System.getProperty( "os.name" ).contains( "indow" ) ? filePath.substring(1) : filePath;
-		Path widgetPath = Paths.get(filePath);
+		filePath = filePath.startsWith("file:") ? filePath.substring(5) : filePath;
+		filePath = System.getProperty( "os.name" ).contains( "indow" ) && filePath.startsWith("/") ? filePath.substring(1) : filePath;
 		try {
+			Path widgetPath = Paths.get(filePath);
 			return new String(Files.readAllBytes(widgetPath));
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
