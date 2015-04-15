@@ -11,19 +11,19 @@
       return ListingTable.__super__.constructor.apply(this, arguments);
     }
 
-    ListingTable.prototype.render = function(view, entityType, entites, configuration) {
-      return this.drawTable(entityType, entites, view);
+    ListingTable.prototype.render = function(view, entityType, entities) {
+      return this.drawTable(entityType, entities, view);
     };
 
-    ListingTable.prototype.drawTable = function(entityType, entites, view) {
-      var table, title;
+    ListingTable.prototype.drawTable = function(entityType, entities, view) {
+      var title;
       title = $("<h2>");
       title.append(entityType.name);
       view.append(title);
-      table = $("<table>");
-      view.append(table);
-      this.buildTableHead(entityType.properties, table);
-      return this.buildTableBody(entityType, entites, table);
+      this.table = $("<table>");
+      view.append(this.table);
+      this.buildTableHead(entityType.propertiesType, this.table);
+      return this.buildTableBody(entityType, entities, this.table);
     };
 
     ListingTable.prototype.buildTableHead = function(properties, table) {
@@ -40,14 +40,14 @@
       });
     };
 
-    ListingTable.prototype.buildTableBody = function(entityType, entites, table) {
+    ListingTable.prototype.buildTableBody = function(entityType, entities, table) {
       var tbody,
         _this = this;
-      if (entites.length > 0) {
+      if (entities.length > 0) {
         tbody = $("<tbody>");
         tbody.attr("id", "instances");
         table.append(tbody);
-        return entites.forEach(function(entity) {
+        return entities.forEach(function(entity) {
           return _this.buildTableLine(entity, entityType, tbody);
         });
       } else {
@@ -56,24 +56,26 @@
     };
 
     ListingTable.prototype.buildTableLine = function(entity, entityType, tbody) {
-      var deleteButton, td, trbody,
+      var deleteButton, self, td, trbody,
         _this = this;
       trbody = $("<tr>");
       trbody.attr("id", "instance_" + entity.id);
       tbody.append(trbody);
-      entityType.properties.forEach(function(property) {
-        var td;
+      entityType.propertiesType.forEach(function(propertyType) {
+        var td, widget;
         td = $("<td>");
-        td.attr("id", "entity_" + entity.id + "_property_" + property.name);
-        td.append(entity[property.name]);
+        td.attr("id", "entity_" + entity.id + "_property_" + propertyType.name);
+        widget = RederingEngine.getWidget(entityType, propertyType.type, 'property');
+        widget.render(td, propertyType, entity[propertyType.name]);
         return trbody.append(td);
       });
       deleteButton = $("<button>");
       deleteButton.append("Delete");
+      self = this;
       deleteButton.on("click", function() {
         var _this = this;
         return DataManager.deleteEntity(entityType.resource, entity.id, function(data) {
-          return RederingEngine.peformContext(View.emptyPage(), entityType, 'root');
+          return self.reloadData(entityType);
         }, function(status) {
           return alert("Ocorreu algum erro " + status);
         });
@@ -81,6 +83,14 @@
       td = $("<td>");
       td.append(deleteButton);
       return trbody.append(td);
+    };
+
+    ListingTable.prototype.reloadData = function(entityType) {
+      var _this = this;
+      return DataManager.getEntities(entityType.resource, function(entities) {
+        $("tbody").empty();
+        return _this.buildTableBody(entityType, entities, _this.table);
+      });
     };
 
     return ListingTable;

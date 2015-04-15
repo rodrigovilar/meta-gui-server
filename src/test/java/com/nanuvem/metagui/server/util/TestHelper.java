@@ -46,7 +46,7 @@ public class TestHelper {
 		PropertyTypeRest prop = new PropertyTypeRest();
 		prop.setName(name);
 		prop.setType(type);
-		expected.getProperties().add(prop);
+		expected.getPropertiesType().add(prop);
 	}
 
 	public static void equals(ResultActions actions, long id, String name) throws Exception {

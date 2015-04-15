@@ -1,7 +1,5 @@
 package com.nanuvem.metagui.server;
 
-import java.io.File;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,9 +40,13 @@ public class MetaGuiEntryPoint {
 		ContextService contextService = application.getBean(ContextService.class);
 		
 		Context rootContext = createContext("root", WidgetType.EntitySet, contextService);
-		Context viewContext = createContext("view", WidgetType.Entity, contextService);
-		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), widgetService, viewContext);
+		Context propertyContext = createContext("property", WidgetType.Entity, contextService);
+		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), widgetService, propertyContext);
+		Widget toStringPropertyWidget = createWidget("ToStringProperty", WidgetType.Property, readWidgetFile("ToStringProperty.js"), widgetService);
+		Widget DateFormatterWidget = createWidget("DateFormatterWidget", WidgetType.Property, readWidgetFile("DateFormatterWidget.js"), widgetService);
 		createRule(rootContext, "*", null, null, listingTableWidget, ruleService);
+		createRule(propertyContext, null, null, "*", toStringPropertyWidget, ruleService);
+		createRule(propertyContext, null, PropertyTypeType.date, null, DateFormatterWidget, ruleService);
 	}
 	
 	private static Context createContext(String name, WidgetType type, ContextService contextService) {
