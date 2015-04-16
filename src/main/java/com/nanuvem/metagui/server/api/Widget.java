@@ -28,7 +28,6 @@ public class Widget{
 	private String code;
 	@NotNull
 	private WidgetType type;
-	private String configuration;
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Context> requiredContexts;
 	
@@ -61,12 +60,6 @@ public class Widget{
 	}
 	public void setType(WidgetType type) {
 		this.type = type;
-	}
-	public String getConfiguration() {
-		return configuration;
-	}
-	public void setConfiguration(String configuration) {
-		this.configuration = configuration;
 	}
 	public List<Context> getRequiredContexts() {
 		return requiredContexts;

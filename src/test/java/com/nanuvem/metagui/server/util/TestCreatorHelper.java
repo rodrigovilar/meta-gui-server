@@ -38,12 +38,11 @@ public class TestCreatorHelper {
 		return propertyTypeRule;
 	}
 	
-	public static Widget createWidget(String name, String code, WidgetType type, String configuration, List<Context> requiredContexts) {
+	public static Widget createWidget(String name, String code, WidgetType type, List<Context> requiredContexts) {
 		Widget widget = new Widget();
 		widget.setName(name);
 		widget.setCode(code);
 		widget.setType(type);
-		widget.setConfiguration(configuration);
 		widget.setRequiredContexts(requiredContexts);
 		return widget;
 	}
@@ -59,7 +58,7 @@ public class TestCreatorHelper {
 				contexts.add(context);
 			}
 		}
-		return createWidget(name, code, type, null, contexts);
+		return createWidget(name, code, type, contexts);
 	}
 	
 	

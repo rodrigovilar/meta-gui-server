@@ -25,6 +25,7 @@ public class Rule {
 	private String entityTypeLocator;
 	private String propertyTypeLocator;
 	private PropertyTypeType propertyTypeTypeLocator;
+	private String configuration;
 	
 	public Long getId() {
 		return id;
@@ -67,5 +68,11 @@ public class Rule {
 	}
 	public void setWidget(Widget widget) {
 		this.widget = widget;
+	}
+	public String getConfiguration() {
+		return configuration;
+	}
+	public void setConfiguration(String configuration) {
+		this.configuration = configuration;
 	}
 }
