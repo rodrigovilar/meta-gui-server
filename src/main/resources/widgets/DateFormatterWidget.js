@@ -12,7 +12,7 @@
     }
 
     DateFormatterWidget.prototype.render = function(view, propertyType, property) {
-      return view.append(moment(new Date(property)).format(this.configuration));
+      return view.append(moment(new Date(property)).format(this.configuration.format));
     };
 
     return DateFormatterWidget;

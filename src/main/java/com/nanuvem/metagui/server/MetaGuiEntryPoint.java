@@ -44,9 +44,9 @@ public class MetaGuiEntryPoint {
 		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), widgetService, propertyContext);
 		Widget toStringPropertyWidget = createWidget("ToStringProperty", WidgetType.Property, readWidgetFile("ToStringProperty.js"), widgetService);
 		Widget DateFormatterWidget = createWidget("DateFormatterWidget", WidgetType.Property, readWidgetFile("DateFormatterWidget.js"), widgetService);
-		createRule(rootContext, "*", null, null, listingTableWidget, ruleService);
-		createRule(propertyContext, null, null, "*", toStringPropertyWidget, ruleService);
-		createRule(propertyContext, null, PropertyTypeType.date, null, DateFormatterWidget, ruleService);
+		createRule(rootContext, "*", null, null, listingTableWidget, null, ruleService);
+		createRule(propertyContext, null, null, "*", toStringPropertyWidget, null, ruleService);
+		createRule(propertyContext, null, PropertyTypeType.date, null, DateFormatterWidget, "{\"format\": \"MMM Do YY\"}", ruleService);
 	}
 	
 	private static Context createContext(String name, WidgetType type, ContextService contextService) {
@@ -66,13 +66,14 @@ public class MetaGuiEntryPoint {
 		return widgetService.saveWidget(widget);
 	}
 	
-	private static Rule createRule(Context providedContext, String entityTypeLocator, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, Widget widget, RuleService ruleService) {
+	private static Rule createRule(Context providedContext, String entityTypeLocator, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, Widget widget, String configuration, RuleService ruleService) {
 		Rule rule = new Rule();
 		rule.setProvidedContext(providedContext);
 		rule.setEntityTypeLocator(entityTypeLocator);
 		rule.setPropertyTypeTypeLocator(propertyTypeTypeLocator);
 		rule.setPropertyTypeLocator(propertyTypeLocator);
 		rule.setWidget(widget);
+		rule.setConfiguration(configuration);
 		return ruleService.saveRule(rule);
 	}
 	

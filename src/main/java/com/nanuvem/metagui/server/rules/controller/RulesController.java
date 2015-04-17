@@ -1,5 +1,6 @@
 package com.nanuvem.metagui.server.rules.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class RulesController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<List<Rule>> getAll(@RequestParam(value="version", defaultValue="0") Long version) {
+	public ResponseEntity<List<RuleRest>> getAll(@RequestParam(value="version", defaultValue="0") Long version) {
 		List<Rule> rules = null;
 		if(version != 0) {
 			rules = rulesContainer.getAllRulesByVersionGreaterThan(version);
@@ -37,15 +38,21 @@ public class RulesController {
 		else {
 			rules = rulesContainer.getAllRules();
 		}
-		return new ResponseEntity<List<Rule>>(rules, HttpStatus.OK);
+		
+		List<RuleRest> rulesRest = new ArrayList<RuleRest>();
+		for(Rule rule : rules) {
+			rulesRest.add(RuleRest.toRest(rule));
+		}
+		
+		return new ResponseEntity<List<RuleRest>>(rulesRest, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Rule> createRule(@RequestBody String input) {
-		Rule rule = new Gson().fromJson(input, Rule.class);
-		rule = rulesContainer.saveRule(rule);
-		return new ResponseEntity<Rule>(rule, HttpStatus.CREATED);
+	public ResponseEntity<RuleRest> createRule(@RequestBody String input) {
+		RuleRest ruleRest = new Gson().fromJson(input, RuleRest.class);
+		Rule rule = rulesContainer.saveRule(RuleRest.toDomain(ruleRest));
+		return new ResponseEntity<RuleRest>(RuleRest.toRest(rule), HttpStatus.CREATED);
 	}
 	
 }
