@@ -16,10 +16,19 @@
     };
 
     ListingTable.prototype.drawTable = function(entityType, entities, view) {
-      var title;
+      var addButton, title,
+        _this = this;
       title = $("<h2>");
       title.append(entityType.name);
       view.append(title);
+      addButton = $("<button>");
+      addButton.append("Add");
+      addButton.click(function() {
+        var formWidget;
+        formWidget = RederingEngine.getWidget(entityType, null, 'form');
+        return formWidget.render(View.emptyPage(), entityType);
+      });
+      view.append(addButton);
       this.table = $("<table>");
       view.append(this.table);
       this.buildTableHead(entityType.propertiesType, this.table);
@@ -56,7 +65,7 @@
     };
 
     ListingTable.prototype.buildTableLine = function(entity, entityType, tbody) {
-      var deleteButton, self, td, trbody,
+      var deleteButton, editButton, self, td, trbody,
         _this = this;
       trbody = $("<tr>");
       trbody.attr("id", "instance_" + entity.id);
@@ -69,6 +78,16 @@
         widget.render(td, propertyType, entity[propertyType.name]);
         return trbody.append(td);
       });
+      editButton = $("<button>");
+      editButton.append("Edit");
+      editButton.click(function() {
+        var formWidget;
+        formWidget = RederingEngine.getWidget(entityType, null, 'form');
+        return formWidget.render(View.emptyPage(), entityType, entity);
+      });
+      td = $("<td>");
+      td.append(editButton);
+      trbody.append(td);
       deleteButton = $("<button>");
       deleteButton.append("Delete");
       self = this;

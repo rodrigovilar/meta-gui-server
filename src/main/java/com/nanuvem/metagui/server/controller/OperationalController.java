@@ -31,6 +31,7 @@ public class OperationalController {
 	@ResponseBody
 	public <T extends EntityType> ResponseEntity<T> create(@PathVariable String resource, @RequestBody String input) {
 		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
+		System.out.println(input);
 		T instance = (T) new Gson().fromJson(input, entityType.getClazz());
 		instance = DomainModelContainer.saveInstance(resource, instance);
         return new ResponseEntity<T>(instance, HttpStatus.CREATED);

@@ -40,13 +40,16 @@ public class MetaGuiEntryPoint {
 		ContextService contextService = application.getBean(ContextService.class);
 		
 		Context rootContext = createContext("root", WidgetType.EntitySet, contextService);
-		Context propertyContext = createContext("property", WidgetType.Entity, contextService);
-		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), widgetService, propertyContext);
+		Context propertyContext = createContext("property", WidgetType.Property, contextService);
+		Context formContext = createContext("form", WidgetType.Entity, contextService);
+		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), widgetService, propertyContext, formContext);
 		Widget toStringPropertyWidget = createWidget("ToStringProperty", WidgetType.Property, readWidgetFile("ToStringProperty.js"), widgetService);
 		Widget DateFormatterWidget = createWidget("DateFormatterWidget", WidgetType.Property, readWidgetFile("DateFormatterWidget.js"), widgetService);
+		Widget simpleFormWidget = createWidget("SimpleFormWidget", WidgetType.Entity, readWidgetFile("SimpleFormWidget.js"), widgetService);
 		createRule(rootContext, "*", null, null, listingTableWidget, null, ruleService);
 		createRule(propertyContext, null, null, "*", toStringPropertyWidget, null, ruleService);
 		createRule(propertyContext, null, PropertyTypeType.date, null, DateFormatterWidget, "{\"format\": \"MMM Do YY\"}", ruleService);
+		createRule(formContext, null, null, null, simpleFormWidget, null, ruleService);
 	}
 	
 	private static Context createContext(String name, WidgetType type, ContextService contextService) {
