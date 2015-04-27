@@ -11,7 +11,20 @@
       return SimpleFormWidget.__super__.constructor.apply(this, arguments);
     }
 
-    SimpleFormWidget.prototype.render = function(view, entityType, entity) {
+    SimpleFormWidget.prototype.render = function(view) {
+      var self,
+        _this = this;
+      self = this;
+      if (this.entityID) {
+        return DataManager.getEntity(this.entityType.resource, this.entityID, function(entity) {
+          return self.draw(view, self.entityType, entity);
+        });
+      } else {
+        return self.draw(view, this.entityType);
+      }
+    };
+
+    SimpleFormWidget.prototype.draw = function(view, entityType, entity) {
       var self, submitButton, table, title;
       title = $("<h2>");
       title.append(entityType.name);
@@ -41,17 +54,27 @@
       if (entity) {
         submitButton.append("Update");
         submitButton.click(function() {
-          var newEntityValues;
+          var newEntityValues,
+            _this = this;
           newEntityValues = self.getEntityValuesFromInput(entityType);
           newEntityValues["id"] = entity.id;
-          return DataManager.updateEntity(entityType.resource, newEntityValues);
+          return DataManager.updateEntity(entityType.resource, newEntityValues).done(function() {
+            return RenderingEngine.popAndRender(View.emptyPage());
+          }).fail(function() {
+            return alert("Error");
+          });
         });
       } else {
         submitButton.append("Create");
         submitButton.click(function() {
-          var newEntityValues;
+          var newEntityValues,
+            _this = this;
           newEntityValues = self.getEntityValuesFromInput(entityType);
-          return DataManager.createEntity(entityType.resource, newEntityValues);
+          return DataManager.createEntity(entityType.resource, newEntityValues).done(function() {
+            return RenderingEngine.popAndRender(View.emptyPage());
+          }).fail(function() {
+            return alert("Error");
+          });
         });
       }
       return view.append(submitButton);

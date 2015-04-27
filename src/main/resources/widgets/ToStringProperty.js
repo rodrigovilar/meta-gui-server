@@ -11,8 +11,8 @@
       return ToStringProperty.__super__.constructor.apply(this, arguments);
     }
 
-    ToStringProperty.prototype.render = function(view, propertyType, property) {
-      return view.append(property);
+    ToStringProperty.prototype.render = function(view) {
+      return view.append(this.property);
     };
 
     return ToStringProperty;

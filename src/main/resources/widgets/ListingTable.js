@@ -11,8 +11,11 @@
       return ListingTable.__super__.constructor.apply(this, arguments);
     }
 
-    ListingTable.prototype.render = function(view, entityType, entities) {
-      return this.drawTable(entityType, entities, view);
+    ListingTable.prototype.render = function(view) {
+      var _this = this;
+      return DataManager.getEntities(this.entityType.resource, function(entities) {
+        return _this.drawTable(_this.entityType, entities, view);
+      });
     };
 
     ListingTable.prototype.drawTable = function(entityType, entities, view) {
@@ -25,8 +28,10 @@
       addButton.append("Add");
       addButton.click(function() {
         var formWidget;
-        formWidget = RederingEngine.getWidget(entityType, null, 'form');
-        return formWidget.render(View.emptyPage(), entityType);
+        formWidget = RenderingEngine.getWidget(entityType, null, 'form');
+        formWidget.entityType = entityType;
+        RenderingEngine.pushWidget(_this);
+        return formWidget.render(View.emptyPage());
       });
       view.append(addButton);
       this.table = $("<table>");
@@ -74,16 +79,21 @@
         var td, widget;
         td = $("<td>");
         td.attr("id", "entity_" + entity.id + "_property_" + propertyType.name);
-        widget = RederingEngine.getWidget(entityType, propertyType.type, 'property');
-        widget.render(td, propertyType, entity[propertyType.name]);
+        widget = RenderingEngine.getWidget(entityType, propertyType.type, 'property');
+        widget.propertyType = propertyType;
+        widget.property = entity[propertyType.name];
+        widget.render(td);
         return trbody.append(td);
       });
       editButton = $("<button>");
       editButton.append("Edit");
       editButton.click(function() {
         var formWidget;
-        formWidget = RederingEngine.getWidget(entityType, null, 'form');
-        return formWidget.render(View.emptyPage(), entityType, entity);
+        formWidget = RenderingEngine.getWidget(entityType, null, 'form');
+        formWidget.entityType = entityType;
+        formWidget.entityID = entity.id;
+        RenderingEngine.pushWidget(_this);
+        return formWidget.render(View.emptyPage());
       });
       td = $("<td>");
       td.append(editButton);
@@ -91,25 +101,17 @@
       deleteButton = $("<button>");
       deleteButton.append("Delete");
       self = this;
-      deleteButton.on("click", function() {
+      deleteButton.click(function() {
         var _this = this;
-        return DataManager.deleteEntity(entityType.resource, entity.id, function(data) {
-          return self.reloadData(entityType);
-        }, function(status) {
-          return alert("Ocorreu algum erro " + status);
+        return DataManager.deleteEntity(entityType.resource, entity.id).done(function(data, textStatus, jqXHR) {
+          return self.render(View.emptyPage(), entityType);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          return alert("Ocorreu o erro: " + status);
         });
       });
       td = $("<td>");
       td.append(deleteButton);
       return trbody.append(td);
-    };
-
-    ListingTable.prototype.reloadData = function(entityType) {
-      var _this = this;
-      return DataManager.getEntities(entityType.resource, function(entities) {
-        $("tbody").empty();
-        return _this.buildTableBody(entityType, entities, _this.table);
-      });
     };
 
     return ListingTable;

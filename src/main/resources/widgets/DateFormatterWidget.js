@@ -11,8 +11,13 @@
       return DateFormatterWidget.__super__.constructor.apply(this, arguments);
     }
 
-    DateFormatterWidget.prototype.render = function(view, propertyType, property) {
-      return view.append(moment(new Date(property)).format(this.configuration.format));
+    DateFormatterWidget.prototype.render = function(view) {
+      var format;
+      format = "yy-mm-dd";
+      if (this.configuration.format) {
+        format = this.configuration.format;
+      }
+      return view.append($.datepicker.formatDate(format, new Date(this.property)));
     };
 
     return DateFormatterWidget;

@@ -48,7 +48,7 @@ public class MetaGuiEntryPoint {
 		Widget simpleFormWidget = createWidget("SimpleFormWidget", WidgetType.Entity, readWidgetFile("SimpleFormWidget.js"), widgetService);
 		createRule(rootContext, "*", null, null, listingTableWidget, null, ruleService);
 		createRule(propertyContext, null, null, "*", toStringPropertyWidget, null, ruleService);
-		createRule(propertyContext, null, PropertyTypeType.date, null, DateFormatterWidget, "{\"format\": \"MMM Do YY\"}", ruleService);
+		createRule(propertyContext, null, PropertyTypeType.date, null, DateFormatterWidget, "{\"format\": \"dd-mm-yy\"}", ruleService);
 		createRule(formContext, null, null, null, simpleFormWidget, null, ruleService);
 	}
 	
