@@ -1,23 +1,19 @@
 package com.nanuvem.metagui.server.api;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 
-@Entity
-public class EntityType {
+@Target(TYPE)
+@Retention(RUNTIME)
+public @interface EntityType {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-
+	String resource();
+	Class<? extends JpaRepository<?, ?>> repositoryType();
 	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 }

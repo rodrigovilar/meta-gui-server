@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
-import com.nanuvem.metagui.server.api.EntityType;
 import com.nanuvem.metagui.server.container.DomainModelContainer;
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
@@ -29,7 +28,7 @@ public class OperationalController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public <T extends EntityType> ResponseEntity<T> create(@PathVariable String resource, @RequestBody String input) {
+	public <T> ResponseEntity<T> create(@PathVariable String resource, @RequestBody String input) {
 		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
 		System.out.println(input);
 		T instance = (T) new Gson().fromJson(input, entityType.getClazz());
@@ -39,7 +38,7 @@ public class OperationalController {
 	
 	@RequestMapping(value = "{instanceId}", method = RequestMethod.GET)
 	@ResponseBody
-	public <T extends EntityType> ResponseEntity<T> get(@PathVariable String resource, @PathVariable Long instanceId) {
+	public <T> ResponseEntity<T> get(@PathVariable String resource, @PathVariable Long instanceId) {
 		T instance = DomainModelContainer.getInstance(resource, instanceId);
 		if(instance == null)
 			return new ResponseEntity<T>(HttpStatus.NOT_FOUND);
@@ -49,15 +48,16 @@ public class OperationalController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "{instanceId}", method = RequestMethod.PUT)
 	@ResponseBody
-	public <T extends EntityType> ResponseEntity<T> update(@PathVariable String resource, @PathVariable Long instanceId, @RequestBody String input) {
+	public <T> ResponseEntity<T> update(@PathVariable String resource, @PathVariable Long instanceId, @RequestBody String input) {
 		EntityTypeDomain entityType = DomainModelContainer.getDomain(resource);
 		T instance = DomainModelContainer.getInstance(resource, instanceId);
-		if(instance == null)
+		
+		if(instance == null) {
 			return new ResponseEntity<T>(HttpStatus.NOT_FOUND);
+		}
 		
 		T newInstance = (T) new Gson().fromJson(input, entityType.getClazz());
-		newInstance.setId(instanceId);
-		instance = DomainModelContainer.saveInstance(resource, newInstance);
+		instance = DomainModelContainer.saveInstance(instanceId, resource, newInstance);
         return new ResponseEntity<T>(instance, HttpStatus.CREATED);
 	}
 

@@ -5,7 +5,7 @@ import java.lang.String;
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
 import java.util.List;
 
-public interface EntityTypeRepository extends JpaRepository<EntityTypeDomain, Long> {
+public interface EntityTypeRepository extends JpaRepository<EntityTypeDomain, Integer> {
 
 	public List<EntityTypeDomain> findByResource(String resource);
 	

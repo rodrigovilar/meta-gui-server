@@ -74,7 +74,7 @@ public class TestHelper {
 				.accept(MediaType.APPLICATION_JSON));
 	}
 
-	public static ResultMatcher entityType(final int position, final int id, final String name) {
+	public static ResultMatcher entityType(final int position, final Object id, final String name) {
 		return new ResultMatcher() {
 			@Override
 			public void match(MvcResult result) throws Exception {
@@ -84,7 +84,7 @@ public class TestHelper {
 		};
 	}
 
-	public static ResultMatcher entityType(final int id, final String name) {
+	public static ResultMatcher entityType(final Object id, final String name) {
 		return new ResultMatcher() {
 			@Override
 			public void match(MvcResult result) throws Exception {

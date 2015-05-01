@@ -29,7 +29,7 @@ public class MetadataEntityTypeController {
 
 	@RequestMapping("/entities/{entityId}")
 	@ResponseBody
-	public EntityTypeRest getEntity(@PathVariable Long entityId) {
+	public EntityTypeRest getEntity(@PathVariable Integer entityId) {
 		return EntityTypeRest.toRest(DomainModelContainer.getDomain(entityId), true);
 	}
 

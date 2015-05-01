@@ -40,6 +40,7 @@ import com.nanuvem.metagui.server.controller.MetadataEntityTypeController;
 import com.nanuvem.metagui.server.controller.OperationalController;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
 
+@SuppressWarnings("unchecked")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MetaGuiEntryPoint.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -73,8 +74,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeGetEntities() throws Exception {
-		int id = (int) DomainModelContainer.deploy("customer", Customer.class,
-				CustomerRepository.class);
+		int id = DomainModelContainer.deploy(Customer.class).get(0);
 
 		get(mockMvc, "/entities").andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(1)))
@@ -86,9 +86,22 @@ public class DeployEntityTypeRestTest {
 
 	@DirtiesContext
 	@Test
+	public void testDependencyRelationship() throws Exception {
+		int id = DomainModelContainer.deploy(Customer.class).get(0);
+
+		get(mockMvc, "/entities").andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(entityType(0, id, "Customer"));
+
+		get(mockMvc, "/api/" + "customer").andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(0)));
+	}
+
+	
+	@DirtiesContext
+	@Test
 	public void testOneEntityTypeWithPropertiesGetEntities() throws Exception {
-		int id = (int) DomainModelContainer.deploy("customerDetails",
-				CustomerDetails.class, CustomerDetailsRepository.class);
+		int id = DomainModelContainer.deploy(CustomerDetails.class).get(0);
 
 		get(mockMvc, "/entities").andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(1)))
@@ -101,8 +114,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOneEntityTypeGetEntity() throws Exception {
-		int id = (int) DomainModelContainer.deploy("customerDetails",
-				CustomerDetails.class, CustomerDetailsRepository.class);
+		int id = DomainModelContainer.deploy(CustomerDetails.class).get(0);
 
 		get(mockMvc, "/entities/" + id).andExpect(status().isOk())
 				.andExpect(entityType(id, "CustomerDetails"))
@@ -119,8 +131,7 @@ public class DeployEntityTypeRestTest {
 	@DirtiesContext
 	@Test
 	public void testOperationalCRUD() throws Exception {
-		DomainModelContainer.deploy("customerDetails", CustomerDetails.class,
-				CustomerDetailsRepository.class);
+		DomainModelContainer.deploy(CustomerDetails.class);
 
 		String name = "FooName";
 		String ssn = null;
