@@ -46,7 +46,7 @@ public class TestHelper {
 		PropertyTypeRest prop = new PropertyTypeRest();
 		prop.setName(name);
 		prop.setType(type);
-		expected.getPropertiesType().add(prop);
+		expected.getPropertyTypes().add(prop);
 	}
 
 	public static void equals(ResultActions actions, long id, String name) throws Exception {
@@ -99,8 +99,8 @@ public class TestHelper {
 		return new ResultMatcher() {
 			@Override
 			public void match(MvcResult result) throws Exception {
-				jsonPath("$.properties[" + propertyTypePosition + "].name").value(name).match(result);
-				jsonPath("$.properties[" + propertyTypePosition + "].type").value(type.name()).match(result);
+				jsonPath("$.propertyTypes[" + propertyTypePosition + "].name").value(name).match(result);
+				jsonPath("$.propertyTypes[" + propertyTypePosition + "].type").value(type.name()).match(result);
 			}
 		};
 	}

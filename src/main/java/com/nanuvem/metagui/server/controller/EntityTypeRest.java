@@ -11,7 +11,7 @@ public class EntityTypeRest {
 	private long id;
 	private String name;
 	private String resource;
-	private List<PropertyTypeRest> propertiesType = new ArrayList<PropertyTypeRest>();
+	private List<PropertyTypeRest> propertyTypes = new ArrayList<PropertyTypeRest>();
 
 	public long getId() {
 		return id;
@@ -29,12 +29,12 @@ public class EntityTypeRest {
 		this.name = name;
 	}
 
-	public List<PropertyTypeRest> getPropertiesType() {
-		return propertiesType;
+	public List<PropertyTypeRest> getPropertyTypes() {
+		return propertyTypes;
 	}
 
-	public void setPropertiesType(List<PropertyTypeRest> propertiesType) {
-		this.propertiesType = propertiesType;
+	public void setPropertyTypes(List<PropertyTypeRest> propertyTypes) {
+		this.propertyTypes = propertyTypes;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class EntityTypeRest {
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
-				+ ((propertiesType == null) ? 0 : propertiesType.hashCode());
+				+ ((propertyTypes == null) ? 0 : propertyTypes.hashCode());
 		return result;
 	}
 
@@ -64,10 +64,10 @@ public class EntityTypeRest {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (propertiesType == null) {
-			if (other.propertiesType != null)
+		if (propertyTypes == null) {
+			if (other.propertyTypes != null)
 				return false;
-		} else if (!propertiesType.equals(other.propertiesType))
+		} else if (!propertyTypes.equals(other.propertyTypes))
 			return false;
 		return true;
 	}
@@ -87,12 +87,12 @@ public class EntityTypeRest {
 			for (Field field : domain.getClazz().getSuperclass().getDeclaredFields()) {
 				PropertyTypeRest propertyTypeRest = PropertyTypeRest
 						.propertyTypeRestFromField(field);
-				entityTypeRest.getPropertiesType().add(propertyTypeRest);
+				entityTypeRest.getPropertyTypes().add(propertyTypeRest);
 			}
 			for (Field field : domain.getClazz().getDeclaredFields()) {
 				PropertyTypeRest propertyTypeRest = PropertyTypeRest
 						.propertyTypeRestFromField(field);
-				entityTypeRest.getPropertiesType().add(propertyTypeRest);
+				entityTypeRest.getPropertyTypes().add(propertyTypeRest);
 			}
 		}
 
