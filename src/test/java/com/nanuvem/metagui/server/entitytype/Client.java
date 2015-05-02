@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.nanuvem.metagui.server.api.EntityType;
+import com.nanuvem.metagui.server.api.RelationshipType;
 
 @Entity
 @EntityType(resource="clients", repositoryType=ClientRepository.class)
@@ -19,7 +20,8 @@ public class Client {
 	
 	private String name;
 	
-	@OneToMany
+	@RelationshipType(composition=true)
+	@OneToMany(mappedBy="client")
 	private List<Dependent> dependents;
 
 	public String getName() {

@@ -1,8 +1,13 @@
 package com.nanuvem.metagui.server.controller;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.nanuvem.metagui.server.container.EntityTypeDomain;
 
@@ -12,6 +17,7 @@ public class EntityTypeRest {
 	private String name;
 	private String resource;
 	private List<PropertyTypeRest> propertyTypes = new ArrayList<PropertyTypeRest>();
+	private List<RelationshipTypeRest> relationshipTypes = new ArrayList<RelationshipTypeRest>();
 
 	public long getId() {
 		return id;
@@ -35,6 +41,14 @@ public class EntityTypeRest {
 
 	public void setPropertyTypes(List<PropertyTypeRest> propertyTypes) {
 		this.propertyTypes = propertyTypes;
+	}
+
+	public List<RelationshipTypeRest> getRelationshipTypes() {
+		return relationshipTypes;
+	}
+
+	public void setRelationshipTypes(List<RelationshipTypeRest> relationshipTypes) {
+		this.relationshipTypes = relationshipTypes;
 	}
 
 	@Override
@@ -73,7 +87,7 @@ public class EntityTypeRest {
 	}
 
 	public static EntityTypeRest toRest(EntityTypeDomain domain,
-			boolean withProperties) {
+			boolean withDetails) {
 		if (domain == null)
 			return null;
 
@@ -82,21 +96,40 @@ public class EntityTypeRest {
 		entityTypeRest.setId(domain.getId());
 		entityTypeRest.setResource(domain.getResource());
 
-		if (withProperties) {
-			//Get EntityType Properties
-			for (Field field : domain.getClazz().getSuperclass().getDeclaredFields()) {
-				PropertyTypeRest propertyTypeRest = PropertyTypeRest
-						.propertyTypeRestFromField(field);
-				entityTypeRest.getPropertyTypes().add(propertyTypeRest);
+		if (withDetails) {
+			// Get EntityType Properties
+			for (Field field : domain.getClazz().getSuperclass()
+					.getDeclaredFields()) {
+				processField(entityTypeRest, field);
 			}
+
 			for (Field field : domain.getClazz().getDeclaredFields()) {
-				PropertyTypeRest propertyTypeRest = PropertyTypeRest
-						.propertyTypeRestFromField(field);
-				entityTypeRest.getPropertyTypes().add(propertyTypeRest);
+				processField(entityTypeRest, field);
 			}
 		}
 
 		return entityTypeRest;
+	}
+
+	private static void processField(EntityTypeRest entityTypeRest, Field field) {
+		if (isProperty(field)) {
+			PropertyTypeRest propertyTypeRest = 
+					PropertyTypeRest.propertyTypeRestFromField(field);
+			entityTypeRest.getPropertyTypes().add(propertyTypeRest);
+		} else {
+			RelationshipTypeRest relationshipTypeRest =
+					RelationshipTypeRest.relationshipTypeRestFromField(field);
+			entityTypeRest.getRelationshipTypes().add(relationshipTypeRest);
+		}
+	}
+
+	private static boolean isProperty(Field field) {
+		return !hasAnnotation(field, OneToMany.class) && !hasAnnotation(field, OneToOne.class) 
+				&& !hasAnnotation(field, ManyToOne.class);
+	}
+
+	private static boolean hasAnnotation(Field field, Class<? extends Annotation> annotation) {
+		return field.getAnnotation(annotation) != null;
 	}
 
 	public String getResource() {

@@ -31,17 +31,21 @@ public class DomainModelContainer {
 
 	}
 
-	public static <T> List<Integer> deploy(Class<T>... classes) {
+	public static List<Integer> deploy(Class<?>... classes) {
 		List<Integer> ids = new ArrayList<Integer>();
 		
-		for (Class<T> clazz : classes) {
-			ids.add(deployOne(clazz));
+		for (Class<?> clazz : classes) {
+			ids.add(deployEntities(clazz));
 		}
-		
+
+		for (Class<?> clazz : classes) {
+			deployRelationships(clazz);
+		}
+
 		return ids;
 	}
 	
-	private static <T> int deployOne(Class<T> clazz) {
+	private static <T> int deployEntities(Class<T> clazz) {
 		
 		EntityType entityType = clazz.getAnnotation(EntityType.class);
 		String resource = entityType.resource();
@@ -57,6 +61,10 @@ public class DomainModelContainer {
 		return entityTypeDomain.getId();
 	}
 
+	private static <T> void deployRelationships(Class<T> clazz) {
+		
+	}
+
 	public static EntityTypeRepository getEntityTypeRepository() {
 		return applicationContext.getBean(EntityTypeRepository.class);
 	}
@@ -70,12 +78,9 @@ public class DomainModelContainer {
 	}
 
 	public static EntityTypeDomain getDomain(String resource) {
-		List<EntityTypeDomain> entitiesTypeDomain = getEntityTypeRepository()
-				.findByResource(resource);
-		if (entitiesTypeDomain.size() > 0) {
-			return entitiesTypeDomain.get(0);
-		}
-		return null;
+		EntityTypeDomain entityTypeDomain = 
+				getEntityTypeRepository().findByResource(resource);
+		return entityTypeDomain;
 	}
 
 	public static <T> T saveInstance(String resource, T instance) {
