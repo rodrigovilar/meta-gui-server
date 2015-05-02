@@ -28,6 +28,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.nanuvem.metagui.server.api.Cardinality;
 import com.nanuvem.metagui.server.controller.EntityTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeRest;
 import com.nanuvem.metagui.server.controller.PropertyTypeType;
@@ -74,7 +75,7 @@ public class TestHelper {
 				.accept(MediaType.APPLICATION_JSON));
 	}
 
-	public static ResultMatcher entityType(final int position, final int id, final String name) {
+	public static ResultMatcher entityType(final int position, final Object id, final String name) {
 		return new ResultMatcher() {
 			@Override
 			public void match(MvcResult result) throws Exception {
@@ -84,7 +85,7 @@ public class TestHelper {
 		};
 	}
 
-	public static ResultMatcher entityType(final int id, final String name) {
+	public static ResultMatcher entityType(final Object id, final String name) {
 		return new ResultMatcher() {
 			@Override
 			public void match(MvcResult result) throws Exception {
@@ -104,7 +105,22 @@ public class TestHelper {
 			}
 		};
 	}
-	
+
+	public static ResultMatcher relationshipType(final int relationshipTypePosition, final String name,
+			final String targetTypeName, final int targetTypeId, final Cardinality sourceCardinality, 
+			final Cardinality targetCardinality) {
+		return new ResultMatcher() {
+			@Override
+			public void match(MvcResult result) throws Exception {
+				jsonPath("$.relationshipTypes[" + relationshipTypePosition + "].name").value(name).match(result);
+				jsonPath("$.relationshipTypes[" + relationshipTypePosition + "].targetType.name").value(targetTypeName).match(result);
+				jsonPath("$.relationshipTypes[" + relationshipTypePosition + "].targetType.id").value(targetTypeId).match(result);
+				jsonPath("$.relationshipTypes[" + relationshipTypePosition + "].targetCardinality").value(targetCardinality.name()).match(result);
+				jsonPath("$.relationshipTypes[" + relationshipTypePosition + "].sourceCardinality").value(sourceCardinality.name()).match(result);
+			}
+		};
+	}
+
 	public static ResultMatcher instance(final Map<String, Object> instanceMap) {
 		return new ResultMatcher() {
 			@SuppressWarnings("unchecked")

@@ -1,8 +1,12 @@
 package com.nanuvem.metagui.server.container;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.Id;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -10,6 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.nanuvem.metagui.server.api.EntityType;
+
 
 @SuppressWarnings("unchecked")
 @Component
@@ -26,19 +31,38 @@ public class DomainModelContainer {
 
 	}
 
-	public static <T extends EntityType, R extends JpaRepository<T, Long>> long deploy(String resource,
-			Class<T> clazz, Class<R> repositoryType) {
+	public static List<Integer> deploy(Class<?>... classes) {
+		List<Integer> ids = new ArrayList<Integer>();
+		
+		for (Class<?> clazz : classes) {
+			ids.add(deployEntities(clazz));
+		}
 
-		JpaRepository<?, ?> repository = (JpaRepository<?, ?>) applicationContext
-				.getBean(repositoryType);
+		for (Class<?> clazz : classes) {
+			deployRelationships(clazz);
+		}
+
+		return ids;
+	}
+	
+	private static <T> int deployEntities(Class<T> clazz) {
+		
+		EntityType entityType = clazz.getAnnotation(EntityType.class);
+		String resource = entityType.resource();
+		Class<? extends JpaRepository<?, ?>> repositoryType = entityType.repositoryType();
+		
+		JpaRepository<?, ?> repository = (JpaRepository<?, ?>) applicationContext.getBean(repositoryType);
 
 		EntityTypeRepository entityTypeRepository = getEntityTypeRepository();
-		EntityTypeDomain entityType = EntityTypeDomain
-				.entityTypeFromClass(resource, clazz);
+		EntityTypeDomain entityTypeDomain = EntityTypeDomain.entityTypeFromClass(resource, clazz);
 
-		entityType = entityTypeRepository.save(entityType);
+		entityTypeDomain = entityTypeRepository.save(entityTypeDomain);
 		repositories.put(resource, repository);
-		return entityType.getId();
+		return entityTypeDomain.getId();
+	}
+
+	private static <T> void deployRelationships(Class<T> clazz) {
+		
 	}
 
 	public static EntityTypeRepository getEntityTypeRepository() {
@@ -49,32 +73,53 @@ public class DomainModelContainer {
 		return getEntityTypeRepository().findAll();
 	}
 
-	public static EntityTypeDomain getDomain(Long id) {
+	public static EntityTypeDomain getDomain(Integer id) {
 		return getEntityTypeRepository().findOne(id);
 	}
 
 	public static EntityTypeDomain getDomain(String resource) {
-		List<EntityTypeDomain> entitiesTypeDomain = getEntityTypeRepository()
-				.findByResource(resource);
-		if (entitiesTypeDomain.size() > 0) {
-			return entitiesTypeDomain.get(0);
-		}
-		return null;
+		EntityTypeDomain entityTypeDomain = 
+				getEntityTypeRepository().findByResource(resource);
+		return entityTypeDomain;
 	}
 
-	public static <T extends EntityType> T saveInstance(String resource, T instance) {
+	public static <T> T saveInstance(String resource, T instance) {
 		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories
 				.get(resource);
 		return repository.saveAndFlush(instance);
 	}
 
-	public static <T extends EntityType> List<T> getInstances(String resource) {
+	public static <T> T saveInstance(Object id, String resource, T instance) {
+		setId(id, instance);
+		return saveInstance(resource, instance);
+	}
+
+	private static <T> void setId(Object id, T instance) {
+		Class<?> instanceClazz = instance.getClass();
+		
+		try {
+			for (Field field : instanceClazz.getFields()) {
+				if (field.getAnnotation(Id.class) != null) {
+					field.set(instance, id);
+					break;
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static <T> List<T> getInstances(String resource) {
 		JpaRepository<T, ?> repository = (JpaRepository<T, ?>) repositories
 				.get(resource);
 		return repository.findAll();
 	}
 
-	public static <T extends EntityType> T getInstance(String resource, Long id) {
+	public static <T> T getInstance(String resource, Long id) {
 		JpaRepository<T, Long> repository = (JpaRepository<T, Long>) repositories
 				.get(resource);
 		T instance = repository.findOne(id);
