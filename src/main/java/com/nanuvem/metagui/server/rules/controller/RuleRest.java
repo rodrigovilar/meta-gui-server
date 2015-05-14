@@ -1,5 +1,6 @@
 package com.nanuvem.metagui.server.rules.controller;
 
+import com.nanuvem.metagui.server.api.Cardinality;
 import com.nanuvem.metagui.server.api.Context;
 import com.nanuvem.metagui.server.api.Rule;
 import com.nanuvem.metagui.server.api.Widget;
@@ -16,6 +17,7 @@ public class RuleRest {
 	private String entityTypeLocator;
 	private String propertyTypeLocator;
 	private PropertyTypeType propertyTypeTypeLocator;
+	private Cardinality relationshipTargetCardinality;
 	private String configuration;
 
 	public long getId() {
@@ -88,6 +90,16 @@ public class RuleRest {
 		this.configuration = configuration;
 	}
 
+	public Cardinality getRelationshipTargetCardinality() {
+		return relationshipTargetCardinality;
+	}
+
+
+	public void setRelationshipTargetCardinality(
+			Cardinality relationshipTargetCardinality) {
+		this.relationshipTargetCardinality = relationshipTargetCardinality;
+	}
+
 	public static RuleRest toRest(Rule rule) {
 		RuleRest ruleRest = new RuleRest();
 		ruleRest.setId(rule.getId());
@@ -97,6 +109,7 @@ public class RuleRest {
 		ruleRest.setEntityTypeLocator(rule.getEntityTypeLocator());
 		ruleRest.setPropertyTypeLocator(rule.getPropertyTypeLocator());
 		ruleRest.setPropertyTypeTypeLocator(rule.getPropertyTypeTypeLocator());
+		ruleRest.setRelationshipTargetCardinality(rule.getRelationshipTargetCardinality());
 		ruleRest.setConfiguration(rule.getConfiguration());
 		return ruleRest;
 	}
@@ -108,6 +121,7 @@ public class RuleRest {
 		rule.setEntityTypeLocator(ruleRest.getEntityTypeLocator());
 		rule.setPropertyTypeLocator(ruleRest.getPropertyTypeLocator());
 		rule.setPropertyTypeTypeLocator(ruleRest.getPropertyTypeTypeLocator());
+		rule.setRelationshipTargetCardinality(ruleRest.getRelationshipTargetCardinality());
 		rule.setConfiguration(ruleRest.getConfiguration());
 		Widget widget = WidgetRest.toDomain(ruleRest.getWidget());
 		rule.setWidget(widget);

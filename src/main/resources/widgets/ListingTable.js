@@ -28,7 +28,7 @@
       addButton.append("Add");
       addButton.click(function() {
         var formWidget;
-        formWidget = RenderingEngine.getWidget(entityType, null, 'form');
+        formWidget = RenderingEngine.getEntityWidget('form', entityType);
         formWidget.entityType = entityType;
         RenderingEngine.pushWidget(_this);
         return formWidget.render(View.emptyPage());
@@ -36,7 +36,7 @@
       view.append(addButton);
       this.table = $("<table>");
       view.append(this.table);
-      this.buildTableHead(entityType.propertiesType, this.table);
+      this.buildTableHead(entityType.propertyTypes, this.table);
       return this.buildTableBody(entityType, entities, this.table);
     };
 
@@ -75,11 +75,11 @@
       trbody = $("<tr>");
       trbody.attr("id", "instance_" + entity.id);
       tbody.append(trbody);
-      entityType.propertiesType.forEach(function(propertyType) {
+      entityType.propertyTypes.forEach(function(propertyType) {
         var td, widget;
         td = $("<td>");
         td.attr("id", "entity_" + entity.id + "_property_" + propertyType.name);
-        widget = RenderingEngine.getWidget(entityType, propertyType.type, 'property');
+        widget = RenderingEngine.getPropertyWidget('property', entityType, propertyType);
         widget.propertyType = propertyType;
         widget.property = entity[propertyType.name];
         widget.render(td);
@@ -89,7 +89,7 @@
       editButton.append("Edit");
       editButton.click(function() {
         var formWidget;
-        formWidget = RenderingEngine.getWidget(entityType, null, 'form');
+        formWidget = RenderingEngine.getEntityWidget('form', entityType);
         formWidget.entityType = entityType;
         formWidget.entityID = entity.id;
         RenderingEngine.pushWidget(_this);

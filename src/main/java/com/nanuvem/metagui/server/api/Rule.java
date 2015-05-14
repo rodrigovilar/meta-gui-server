@@ -25,6 +25,7 @@ public class Rule {
 	private String entityTypeLocator;
 	private String propertyTypeLocator;
 	private PropertyTypeType propertyTypeTypeLocator;
+	private Cardinality relationshipTargetCardinality;
 	private String configuration;
 	
 	public Long getId() {
@@ -74,5 +75,12 @@ public class Rule {
 	}
 	public void setConfiguration(String configuration) {
 		this.configuration = configuration;
+	}
+	public Cardinality getRelationshipTargetCardinality() {
+		return relationshipTargetCardinality;
+	}
+	public void setRelationshipTargetCardinality(
+			Cardinality relationshipTargetCardinality) {
+		this.relationshipTargetCardinality = relationshipTargetCardinality;
 	}
 }
