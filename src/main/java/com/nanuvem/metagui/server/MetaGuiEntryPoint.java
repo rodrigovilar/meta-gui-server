@@ -23,6 +23,9 @@ import com.nanuvem.metagui.server.widgets.WidgetService;
 @SpringBootApplication
 public class MetaGuiEntryPoint {
 
+	private static WidgetService widgetService;
+	private static RuleService ruleService;
+	private static ContextService contextService;
 	
 	public static ConfigurableApplicationContext run(String[] args) {
 		ConfigurableApplicationContext application = SpringApplication.run(MetaGuiEntryPoint.class, args);
@@ -36,36 +39,34 @@ public class MetaGuiEntryPoint {
 	}
 	
 	public static void initDB(ConfigurableApplicationContext application) {
-		WidgetService widgetService = application.getBean(WidgetService.class);
-		RuleService ruleService = application.getBean(RuleService.class);
-		ContextService contextService = application.getBean(ContextService.class);
+		widgetService = application.getBean(WidgetService.class);
+		ruleService = application.getBean(RuleService.class);
+		contextService = application.getBean(ContextService.class);
 		
-		Context rootContext = createContext("root", WidgetType.EntitySet, contextService);
-		Context propertyContext = createContext("property", WidgetType.Property, contextService);
-		Context formContext = createContext("form", WidgetType.Entity, contextService);
-		Context fieldContext = createContext("field", WidgetType.Property, contextService);
-		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), widgetService, propertyContext, formContext);
-		Widget toStringPropertyWidget = createWidget("ToStringProperty", WidgetType.Property, readWidgetFile("ToStringProperty.js"), widgetService);
-		Widget dateFormatterWidget = createWidget("DateFormatterWidget", WidgetType.Property, readWidgetFile("DateFormatterWidget.js"), widgetService);
-		Widget simpleFormWidget = createWidget("SimpleFormWidget", WidgetType.Entity, readWidgetFile("SimpleFormWidget.js"), widgetService, fieldContext);
-		Widget simpleTextFieldProperty = createWidget("SimpleTextFieldProperty", WidgetType.Property, readWidgetFile("SimpleTextFieldProperty.js"), widgetService);
-		Widget datePickerWidget = createWidget("DatePickerWidget", WidgetType.Property, readWidgetFile("DatePickerWidget.js"), widgetService);
-		createRule(rootContext, null, null, null, null, listingTableWidget, null, ruleService);
-		createRule(propertyContext, null, null, null, null, toStringPropertyWidget, null, ruleService);
-		createRule(propertyContext, null, PropertyTypeType.date, null, null, dateFormatterWidget, "{\"format\": \"dd-mm-yy\"}", ruleService);
-		createRule(formContext, null, null, null, null, simpleFormWidget, null, ruleService);
-		createRule(fieldContext, null, null, null, null, simpleTextFieldProperty, null, ruleService);
-		createRule(fieldContext, null, PropertyTypeType.date, null, null, datePickerWidget, null, ruleService);
+		Context rootContext = createContext("root", WidgetType.EntitySet);
+		Context propertyContext = createContext("property", WidgetType.Property);
+		Context formContext = createContext("form", WidgetType.Entity);
+		Context fieldContext = createContext("field", WidgetType.Property);
+		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), propertyContext, formContext);
+		Widget toStringPropertyWidget = createWidget("ToStringProperty", WidgetType.Property, readWidgetFile("ToStringProperty.js"));
+		Widget DateFormatterWidget = createWidget("DateFormatterWidget", WidgetType.Property, readWidgetFile("DateFormatterWidget.js"));
+		Widget simpleFormWidget = createWidget("SimpleFormWidget", WidgetType.Entity, readWidgetFile("SimpleFormWidget.js"), fieldContext);
+		Widget simpleTextFieldPropertyWidget = createWidget("SimpleTextFieldPropertyWidget", WidgetType.Property, readWidgetFile("SimpleTextFieldProperty.js"));
+		createRule(rootContext.getName(), "*", null, null, null, listingTableWidget, null);
+		createRule(propertyContext.getName(), null, null, "*", null, toStringPropertyWidget, null);
+		createRule(propertyContext.getName(), null, PropertyTypeType.date, null, null, DateFormatterWidget, "{\"format\": \"dd-mm-yy\"}");
+		createRule(formContext.getName(), null, null, null, null, simpleFormWidget, null);
+		createRule(fieldContext.getName(), null, null, null, null, simpleTextFieldPropertyWidget, null);
 	}
 	
-	private static Context createContext(String name, WidgetType type, ContextService contextService) {
+	public static Context createContext(String name, WidgetType type) {
 		Context context = new Context();
 		context.setName(name);
 		context.setType(type);
 		return contextService.createContext(context);
 	}
 	
-	private static Widget createWidget(String name, WidgetType type, String code, WidgetService widgetService, Context ... requiredContexts) {
+	public static Widget createWidget(String name, WidgetType type, String code, Context ... requiredContexts) {
 		Widget widget = new Widget();
 		widget.setName(name);
 		widget.setType(type);
@@ -75,9 +76,9 @@ public class MetaGuiEntryPoint {
 		return widgetService.saveWidget(widget);
 	}
 	
-	private static Rule createRule(Context providedContext, String entityTypeLocator, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, Cardinality relationshipTargetCardinality, Widget widget, String configuration, RuleService ruleService) {
+	public static Rule createRule(String providedContextName, String entityTypeLocator, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, Cardinality relationshipTargetCardinality, Widget widget, String configuration) {
 		Rule rule = new Rule();
-		rule.setProvidedContext(providedContext);
+		rule.setProvidedContext(contextService.getContextByName(providedContextName));
 		rule.setEntityTypeLocator(entityTypeLocator);
 		rule.setPropertyTypeTypeLocator(propertyTypeTypeLocator);
 		rule.setPropertyTypeLocator(propertyTypeLocator);
