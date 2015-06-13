@@ -47,16 +47,19 @@ public class MetaGuiEntryPoint {
 		Context propertyContext = createContext("property", WidgetType.Property);
 		Context formContext = createContext("form", WidgetType.Entity);
 		Context fieldContext = createContext("field", WidgetType.Property);
+		Context fieldRelationContext = createContext("fieldRelation", WidgetType.Relationship);
 		Widget listingTableWidget = createWidget("ListingTable", WidgetType.EntitySet, readWidgetFile("ListingTable.js"), propertyContext, formContext);
 		Widget toStringPropertyWidget = createWidget("ToStringProperty", WidgetType.Property, readWidgetFile("ToStringProperty.js"));
 		Widget DateFormatterWidget = createWidget("DateFormatterWidget", WidgetType.Property, readWidgetFile("DateFormatterWidget.js"));
 		Widget simpleFormWidget = createWidget("SimpleFormWidget", WidgetType.Entity, readWidgetFile("SimpleFormWidget.js"), fieldContext);
 		Widget simpleTextFieldPropertyWidget = createWidget("SimpleTextFieldPropertyWidget", WidgetType.Property, readWidgetFile("SimpleTextFieldProperty.js"));
+		Widget comboBoxWidget = createWidget("ComboBoxWidget", WidgetType.Relationship, readWidgetFile("ComboBoxWidget.js"));
 		createRule(rootContext.getName(), "*", null, null, null, listingTableWidget, null);
 		createRule(propertyContext.getName(), null, null, "*", null, toStringPropertyWidget, null);
 		createRule(propertyContext.getName(), null, PropertyTypeType.date, null, null, DateFormatterWidget, "{\"format\": \"dd-mm-yy\"}");
 		createRule(formContext.getName(), null, null, null, null, simpleFormWidget, null);
 		createRule(fieldContext.getName(), null, null, null, null, simpleTextFieldPropertyWidget, null);
+		createRule(fieldRelationContext.getName(), null, null, null, Cardinality.One, comboBoxWidget, null);
 	}
 	
 	public static Context createContext(String name, WidgetType type) {
