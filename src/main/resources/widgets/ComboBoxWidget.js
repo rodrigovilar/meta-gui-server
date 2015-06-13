@@ -12,21 +12,28 @@
     }
 
     ComboBoxWidget.prototype.render = function(view) {
-      var selectField,
+      var configuration, selectField,
         _this = this;
-      selectField = $("<select>");
-      this.selectField = selectField;
+      this.selectField = $("<select>");
       view.append(this.selectField);
+      selectField = this.selectField;
+      configuration = this.configuration;
       return DataManager.getEntities(this.relationshipType.targetType.resource, function(entities) {
         return entities.forEach(function(entity) {
           var option;
           option = new Option(entity.id);
-          if (this.configuration) {
-            option = new Option(entity[this.configuration.propertyKey], entity.id);
+          if (configuration) {
+            option = new Option(entity[configuration.propertyKey], entity.id);
           }
           return selectField.append(option);
         });
       });
+    };
+
+    ComboBoxWidget.prototype.injectValue = function(entity) {
+      return entity[this.relationshipType.name] = {
+        id: parseInt(this.selectField[0].selectedOptions[0].value)
+      };
     };
 
     return ComboBoxWidget;

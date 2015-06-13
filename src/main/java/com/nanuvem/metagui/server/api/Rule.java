@@ -7,8 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
-import com.nanuvem.metagui.server.controller.PropertyTypeType;
-
 @Entity
 public class Rule {
 
@@ -24,7 +22,7 @@ public class Rule {
 	private Widget widget;
 	private String entityTypeLocator;
 	private String propertyTypeLocator;
-	private PropertyTypeType propertyTypeTypeLocator;
+	private String propertyTypeTypeLocator;
 	private Cardinality relationshipTargetCardinality;
 	private String configuration;
 	
@@ -58,10 +56,10 @@ public class Rule {
 	public void setPropertyTypeLocator(String propertyTypeLocator) {
 		this.propertyTypeLocator = propertyTypeLocator;
 	}
-	public PropertyTypeType getPropertyTypeTypeLocator() {
+	public String getPropertyTypeTypeLocator() {
 		return propertyTypeTypeLocator;
 	}
-	public void setPropertyTypeTypeLocator(PropertyTypeType propertyTypeTypeLocator) {
+	public void setPropertyTypeTypeLocator(String propertyTypeTypeLocator) {
 		this.propertyTypeTypeLocator = propertyTypeTypeLocator;
 	}
 	public Widget getWidget() {

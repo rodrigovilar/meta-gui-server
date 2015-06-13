@@ -151,14 +151,14 @@ public class WidgetsAndRulesControllerTest {
 		Rule propertyTypeRule = TestCreatorHelper.createPropertyRule(contextName2, PropertyTypeType.string, "*", propertyWidget.getName());
 		instanceMap = objectToMap(propertyTypeRule);
 		fixRuleInstanceMap(instanceMap);
-		instanceMap.put("propertyTypeTypeLocator", propertyTypeRule.getPropertyTypeTypeLocator().name());
+		instanceMap.put("propertyTypeTypeLocator", propertyTypeRule.getPropertyTypeTypeLocator());
 		
 		post(mockMvc, "/rules", propertyTypeRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		
 		Rule propertyRule = TestCreatorHelper.createPropertyRule(contextName2, PropertyTypeType.string, "*.name", propertyWidget.getName());
 		instanceMap = objectToMap(propertyRule);
 		fixRuleInstanceMap(instanceMap);
-		instanceMap.put("propertyTypeTypeLocator", propertyTypeRule.getPropertyTypeTypeLocator().name());
+		instanceMap.put("propertyTypeTypeLocator", propertyTypeRule.getPropertyTypeTypeLocator());
 		
 		post(mockMvc, "/rules", propertyRule).andExpect(status().isCreated()).andExpect(instance(instanceMap));
 		

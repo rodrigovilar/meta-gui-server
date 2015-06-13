@@ -5,7 +5,6 @@ import com.nanuvem.metagui.server.api.Context;
 import com.nanuvem.metagui.server.api.Rule;
 import com.nanuvem.metagui.server.api.Widget;
 import com.nanuvem.metagui.server.controller.ContextRest;
-import com.nanuvem.metagui.server.controller.PropertyTypeType;
 import com.nanuvem.metagui.server.controller.WidgetRest;
 
 public class RuleRest {
@@ -16,7 +15,7 @@ public class RuleRest {
 	private ContextRest providedContext;
 	private String entityTypeLocator;
 	private String propertyTypeLocator;
-	private PropertyTypeType propertyTypeTypeLocator;
+	private String propertyTypeTypeLocator;
 	private Cardinality relationshipTargetCardinality;
 	private String configuration;
 
@@ -73,12 +72,12 @@ public class RuleRest {
 		this.propertyTypeLocator = propertyTypeLocator;
 	}
 
-	public PropertyTypeType getPropertyTypeTypeLocator() {
+	public String getPropertyTypeTypeLocator() {
 		return propertyTypeTypeLocator;
 	}
 
 	public void setPropertyTypeTypeLocator(
-			PropertyTypeType propertyTypeTypeLocator) {
+			String propertyTypeTypeLocator) {
 		this.propertyTypeTypeLocator = propertyTypeTypeLocator;
 	}
 

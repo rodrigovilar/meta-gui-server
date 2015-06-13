@@ -26,7 +26,7 @@ public class TestCreatorHelper {
 	
 	public static Rule createPropertyRule(String contextName, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, String widgetName) {
 		Rule propertyTypeRule = new Rule();
-		propertyTypeRule.setPropertyTypeTypeLocator(propertyTypeTypeLocator);
+		propertyTypeRule.setPropertyTypeTypeLocator(propertyTypeTypeLocator.name());
 		propertyTypeRule.setPropertyTypeLocator(propertyTypeLocator);
 		Context providedContext = new Context();
 		providedContext.setName(contextName);

@@ -56,7 +56,7 @@ public class MetaGuiEntryPoint {
 		Widget comboBoxWidget = createWidget("ComboBoxWidget", WidgetType.Relationship, readWidgetFile("ComboBoxWidget.js"));
 		createRule(rootContext.getName(), "*", null, null, null, listingTableWidget, null);
 		createRule(propertyContext.getName(), null, null, "*", null, toStringPropertyWidget, null);
-		createRule(propertyContext.getName(), null, PropertyTypeType.date, null, null, DateFormatterWidget, "{\"format\": \"dd-mm-yy\"}");
+		createRule(propertyContext.getName(), null, PropertyTypeType.date.name(), null, null, DateFormatterWidget, "{\"format\": \"dd-mm-yy\"}");
 		createRule(formContext.getName(), null, null, null, null, simpleFormWidget, null);
 		createRule(fieldContext.getName(), null, null, null, null, simpleTextFieldPropertyWidget, null);
 		createRule(fieldRelationContext.getName(), null, null, null, Cardinality.One, comboBoxWidget, null);
@@ -79,7 +79,7 @@ public class MetaGuiEntryPoint {
 		return widgetService.saveWidget(widget);
 	}
 	
-	public static Rule createRule(String providedContextName, String entityTypeLocator, PropertyTypeType propertyTypeTypeLocator, String propertyTypeLocator, Cardinality relationshipTargetCardinality, Widget widget, String configuration) {
+	public static Rule createRule(String providedContextName, String entityTypeLocator, String propertyTypeTypeLocator, String propertyTypeLocator, Cardinality relationshipTargetCardinality, Widget widget, String configuration) {
 		Rule rule = new Rule();
 		rule.setProvidedContext(contextService.getContextByName(providedContextName));
 		rule.setEntityTypeLocator(entityTypeLocator);
