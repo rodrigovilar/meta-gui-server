@@ -54,12 +54,14 @@ public class MetaGuiEntryPoint {
 		Widget simpleFormWidget = createWidget("SimpleFormWidget", WidgetType.Entity, readWidgetFile("SimpleFormWidget.js"), fieldContext);
 		Widget simpleTextFieldPropertyWidget = createWidget("SimpleTextFieldPropertyWidget", WidgetType.Property, readWidgetFile("SimpleTextFieldProperty.js"));
 		Widget comboBoxWidget = createWidget("ComboBoxWidget", WidgetType.Relationship, readWidgetFile("ComboBoxWidget.js"));
+		Widget multiSelectBoxWidget = createWidget("MultiSelectBoxWidget", WidgetType.Relationship, readWidgetFile("MultiSelectBoxWidget.js"));
 		createRule(rootContext.getName(), "*", null, null, null, listingTableWidget, null);
 		createRule(propertyContext.getName(), null, null, "*", null, toStringPropertyWidget, null);
 		createRule(propertyContext.getName(), null, PropertyTypeType.date.name(), null, null, DateFormatterWidget, "{\"format\": \"dd-mm-yy\"}");
 		createRule(formContext.getName(), null, null, null, null, simpleFormWidget, null);
 		createRule(fieldContext.getName(), null, null, null, null, simpleTextFieldPropertyWidget, null);
 		createRule(fieldRelationContext.getName(), null, null, null, Cardinality.One, comboBoxWidget, null);
+		createRule(fieldRelationContext.getName(), null, null, null, Cardinality.Many, multiSelectBoxWidget, null);
 	}
 	
 	public static Context createContext(String name, WidgetType type) {
